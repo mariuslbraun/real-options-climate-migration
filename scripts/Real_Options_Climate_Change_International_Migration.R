@@ -1,10 +1,10 @@
 # install required packages
-install.packages("fitdistrplus")
-install.packages("goft")
-install.packages("mgcv")
-install.packages("ggplot2")
-install.packages("tictoc")
-install.packages("itsadug")
+ install.packages("fitdistrplus")
+ install.packages("goft")
+ install.packages("mgcv")
+ install.packages("ggplot2")
+ install.packages("tictoc")
+ install.packages("itsadug")
 
 # load packages
 library(readr)
@@ -26,12 +26,13 @@ rm(list = ls())
 df_total = read.csv("prepared\\Dataset_final.csv")
 df_total$mig_rate_new = df_total$mig_rate * 100
 
-# create histogram of migration rates
+# create density plot of migration rates
 df_total$mig_rate_scaled = df_total$mig_rate * 1000000
 new_df = df_total[which(df_total$mig_rate_scaled < 10), ]
 d = density(new_df$mig_rate_scaled)
 par(mar = c(5, 4, 2, 2) + 0.1)
 plot(d, main = "")
+abline(v = mean(new_df$mig_rate_scaled), lty = 2)
 df_total = subset(df_total, select = -c(mig_rate_scaled))
 remove(d, new_df)
 
@@ -174,6 +175,34 @@ remove(mig_rate_midinc_contig, mig_rate_lowinc_contig,
 remove(ttest.mig_rate_new, ttest.temp_anom, ttest.precip_anom, ttest.share_temp_greater_1SD,
        ttest.share_precip_less_1SD, ttest.gdp_per_capita)
 
+# density plots of temperature and precipitation anomalies
+
+# temperature anomalies in low-income countries
+d_temp_anom_lowinc = density(df_lowinc$temp_anom)
+par(mar = c(5, 4, 2, 2) + 0.1)
+plot(d_temp_anom_lowinc, main = "")
+abline(v = mean(df_lowinc$temp_anom), lty = 2)
+
+# precipitation anomalies in low-income countries
+d_precip_anom_lowinc = density(df_lowinc$precip_anom)
+par(mar = c(5, 4, 2, 2) + 0.1)
+plot(d_precip_anom_lowinc, main = "")
+abline(v = mean(df_lowinc$precip_anom), lty = 2)
+
+# temperature anomalies in middle-income countries
+d_temp_anom_midinc = density(df_midinc$temp_anom)
+par(mar = c(5, 4, 2, 2) + 0.1)
+plot(d_temp_anom_midinc, main = "")
+abline(v = mean(df_midinc$temp_anom), lty = 2)
+
+# precipitation anomalies in middle-income countries
+d_precip_anom_midinc = density(df_midinc$precip_anom)
+par(mar = c(5, 4, 2, 2) + 0.1)
+plot(d_precip_anom_midinc, main = "")
+abline(v = mean(df_midinc$precip_anom), lty = 2)
+
+rm(d_precip_anom_lowinc, d_precip_anom_midinc, d_temp_anom_lowinc,
+   d_temp_anom_midinc)
 
 
 #### Main results ####
