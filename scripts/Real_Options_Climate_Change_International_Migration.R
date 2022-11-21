@@ -696,6 +696,7 @@ gam.check(gam_midinc_1sd)
 
 
 
+# second round of revisions
 #### Robustness check 6: interaction between climatic anomalies and share of agricultural productivity ####
 
 # create indicator of quantile in the distribution of share of agricultural GDP
@@ -791,3 +792,54 @@ abline(h=0, v=0, lty=2)
 gam.check(gam_agri4)
 
 rm(df_agri1, df_agri2, df_agri3, df_agri4)
+
+
+
+#### Robustness check 7: exclude observations with extreme temperature and precipitation anomalies ####
+# low-income countries
+df_lowinc_no_2sd = df_lowinc %>%
+                        filter(!(temp_anom > (mean(temp_anom) + 2 * sd(temp_anom)) |
+                               precip_anom < (mean(precip_anom) - 2 * sd(precip_anom))
+                               ))
+
+# GAM for low-income countries excluding outliers
+gc()
+tic()
+gam_lowinc_no_2sd = mgcv::gam(mig_rate_new ~ s(temp_anom, bs='cr') + s(precip_anom, bs='cr') + period + X...origin +
+                        destination, family = Gamma(link="log"), data = df_lowinc_no_2sd, method = "REML")
+toc()
+summary(gam_lowinc_no_2sd)
+
+# plot smooth nonparametric functions of temperature and precipitation anomalies
+plot(gam_lowinc_no_2sd, shade = TRUE, xlab = "Temperature anomalies", ylab = "", cex.lab = 1.4,
+     cex.axis = 1.3)
+title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
+plot(gam_lowinc_no_2sd, shade = TRUE, xlab = "Precipitation anomalies", ylab = "", cex.lab = 1.4,
+     cex.axis = 1.3)
+title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
+abline(h=0, v=0, lty=2)
+gam.check(gam_lowinc_no_2sd)
+
+# middle-income countries
+df_midinc_no_2sd = df_midinc %>%
+                        filter(!(temp_anom > (mean(temp_anom) + 2 * sd(temp_anom)) |
+                               precip_anom < (mean(precip_anom) - 2 * sd(precip_anom))
+                               ))
+
+# GAM for middle-income countries excluding outliers
+gc()
+tic()
+gam_midinc_no_2sd = mgcv::gam(mig_rate_new ~ s(temp_anom, bs='cr') + s(precip_anom, bs='cr') + period + X...origin +
+                                destination, family = Gamma(link="log"), data = df_midinc_no_2sd, method = "REML")
+toc()
+summary(gam_midinc_no_2sd)
+
+# plot smooth nonparametric functions of temperature and precipitation anomalies
+plot(gam_midinc_no_2sd, shade = TRUE, xlab = "Temperature anomalies", ylab = "", cex.lab = 1.4,
+     cex.axis = 1.3)
+title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
+plot(gam_midinc_no_2sd, shade = TRUE, xlab = "Precipitation anomalies", ylab = "", cex.lab = 1.4,
+     cex.axis = 1.3)
+title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
+abline(h=0, v=0, lty=2)
+gam.check(gam_midinc_no_2sd)
