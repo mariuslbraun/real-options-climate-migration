@@ -5,6 +5,7 @@
  install.packages("ggplot2")
  install.packages("tictoc")
  install.packages("itsadug")
+ install.packages("moments")
 
 # load packages
 library(readr)
@@ -15,6 +16,7 @@ library(mgcv)
 library(ggplot2)
 library(tictoc)
 library(itsadug)
+library(moments)
 
 # set working directory
 setwd("C:\\Users\\Marius Braun\\Documents\\A Real-Options Analysis of Climate Change and International Migration\\Revise and resubmit 2\\Real_Options_Climate_Migration")
@@ -170,11 +172,11 @@ ttest.share_precip_less_1SD
 ttest.gdp_per_capita = t.test(df_lowinc$gdp_pc_origin, df_midinc$gdp_pc_origin)
 ttest.gdp_per_capita
 
-remove(mig_rate_midinc_contig, mig_rate_lowinc_contig,
+rm(mig_rate_midinc_contig, mig_rate_lowinc_contig,
        mig_rate_midinc_noncontig, mig_rate_lowinc_noncontig,
        mig_rate_midinc_OECD_dest, mig_rate_lowinc_OECD_dest,
        mig_rate_midinc_nonOECD_dest, mig_rate_lowinc_nonOECD_dest)
-remove(ttest.mig_rate_new, ttest.temp_anom, ttest.precip_anom, ttest.share_temp_greater_1SD,
+rm(ttest.mig_rate_new, ttest.temp_anom, ttest.precip_anom, ttest.share_temp_greater_1SD,
        ttest.share_precip_less_1SD, ttest.gdp_per_capita)
 
 # density plots of temperature and precipitation anomalies
@@ -205,6 +207,55 @@ abline(v = mean(df_midinc$precip_anom), lty = 2)
 
 rm(d_precip_anom_lowinc, d_precip_anom_midinc, d_temp_anom_lowinc,
    d_temp_anom_midinc)
+
+# skewness and excess kurtosis of temperature and precipitation anomalies
+# low-income countries
+skewness(df_lowinc$temp_anom)
+kurtosis(df_lowinc$temp_anom)
+skewness(df_lowinc$precip_anom)
+kurtosis(df_lowinc$precip_anom)
+
+# middle-income countries
+skewness(df_midinc$temp_anom)
+kurtosis(df_midinc$temp_anom)
+skewness(df_midinc$precip_anom)
+kurtosis(df_midinc$precip_anom)
+
+# countries that experienced extreme temperature and precipitation anomalies
+# (+2 sd and -2 sd respectively)
+# low-income countries
+countries_lowinc_temp_plus_2sd = (df_lowinc %>% filter(temp_anom > (mean(temp_anom) +
+                                  2 * sd(temp_anom))))$X...origin
+# extreme positive temperature anomalies
+unique(countries_lowinc_temp_plus_2sd)
+# calculate share of observations of low-income sample
+(length(countries_lowinc_temp_plus_2sd) / length(df_lowinc$temp_anom)) * 100
+
+countries_lowinc_precip_minus_2sd = (df_lowinc %>% filter(precip_anom <
+                                     (mean(precip_anom) - 2 * sd(precip_anom))))$X...origin
+# extreme negative precipitation anomalies
+unique(countries_lowinc_precip_minus_2sd)
+# calculate share of observations of low-income sample
+(length(countries_lowinc_precip_minus_2sd) / length(df_lowinc$precip_anom)) * 100
+
+# middle-income countries
+countries_midinc_temp_plus_2sd = (df_midinc %>% filter(temp_anom > (mean(temp_anom) +
+                                  2 * sd(temp_anom))))$X...origin
+# extreme positive temperature anomalies
+unique(countries_midinc_temp_plus_2sd)
+# calculate share of observations of middle-income sample
+(length(countries_midinc_temp_plus_2sd) / length(df_midinc$temp_anom)) * 100
+
+countries_midinc_precip_minus_2sd = (df_midinc %>% filter(precip_anom <
+                                     (mean(precip_anom) - 2 * sd(precip_anom))))$X...origin
+# extreme negative precipitation anomalies
+unique(countries_midinc_precip_minus_2sd)
+# calculate share of observations of low-income sample
+(length(countries_midinc_precip_minus_2sd) / length(df_midinc$precip_anom)) * 100
+
+rm(countries_lowinc_temp_plus_2sd, countries_lowinc_precip_minus_2sd,
+   countries_midinc_temp_plus_2sd, countries_midinc_precip_minus_2sd)
+
 
 
 #### Main results ####
@@ -664,7 +715,7 @@ for(i in 1:n) {
   assign(paste0("df_agri", i), df)
   rm(df)
 }
-rm(i, agri_share_quantiles)
+rm(i, n, agri_share_quantiles)
 
 # GAMs for all four quantiles
 # quantile 1
@@ -675,7 +726,7 @@ gam_agri1 = mgcv::gam(mig_rate_new ~ s(temp_anom, bs = 'cr') + s(precip_anom, bs
 toc()
 summary(gam_agri1)
 
-plot smooth nonparametric functions of temperature and precipitation anomalies
+# plot smooth nonparametric functions of temperature and precipitation anomalies
 plot(gam_agri1, shade = TRUE, xlab = "Temperature anomalies", ylab = "", cex.lab = 1.4,
        cex.axis = 1.3)
 title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
@@ -693,7 +744,7 @@ gam_agri2 = mgcv::gam(mig_rate_new ~ s(temp_anom, bs = 'cr') + s(precip_anom, bs
 toc()
 summary(gam_agri2)
 
-plot smooth nonparametric functions of temperature and precipitation anomalies
+# plot smooth nonparametric functions of temperature and precipitation anomalies
 plot(gam_agri2, shade = TRUE, xlab = "Temperature anomalies", ylab = "", cex.lab = 1.4,
        cex.axis = 1.3)
 title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
@@ -711,7 +762,7 @@ gam_agri3 = mgcv::gam(mig_rate_new ~ s(temp_anom, bs = 'cr') + s(precip_anom, bs
 toc()
 summary(gam_agri3)
 
-plot smooth nonparametric functions of temperature and precipitation anomalies
+# plot smooth nonparametric functions of temperature and precipitation anomalies
 plot(gam_agri3, shade = TRUE, xlab = "Temperature anomalies", ylab = "", cex.lab = 1.4,
        cex.axis = 1.3)
 title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
