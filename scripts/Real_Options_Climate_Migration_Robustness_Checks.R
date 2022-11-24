@@ -38,6 +38,9 @@ df_midinc = df_total[which(df_total$low_income == 0), ]
 
 #### Robustness check 1: vary thresholds for low-income countries ####
 
+# formula for regression models
+baseline_formula_gam = "mig_rate_new ~ s(temp_anom, bs='cr') + s(precip_anom, bs='cr') + period + X...origin + destination"
+
 # lower threshold: bottom 20 % of GDP per capita distribution defined as low-income countries
 df_lowinc0.2 = df_total[which(df_total$low_income0.2 == 1), ]
 df_midinc0.2 = df_total[which(df_total$low_income0.2 == 0), ]
@@ -45,9 +48,8 @@ df_midinc0.2 = df_total[which(df_total$low_income0.2 == 0), ]
 # GAM for low-income countries
 gc()
 tic()
-gam_lowinc0.2 = mgcv::gam(mig_rate_new ~ s(temp_anom, bs='cr') + s(precip_anom, bs='cr') + period +
-                            X...origin + destination, family = Gamma(link = "log"), data = df_lowinc0.2,
-                            method = "REML")
+gam_lowinc0.2 = mgcv::gam(baseline_formula_gam, family = Gamma(link = "log"),
+                            data = df_lowinc0.2, method = "REML")
 toc()
 summary(gam_lowinc0.2)
 
@@ -64,9 +66,8 @@ gam.check(gam_lowinc0.2)
 # GAM for middle-income countries
 gc()
 tic()
-gam_midinc0.2 = mgcv::gam(mig_rate_new ~ s(temp_anom, bs='cr') + s(precip_anom, bs='cr') + period +
-                            X...origin + destination, family = Gamma(link = "log"), data = df_midinc0.2,
-                            method = "REML")
+gam_midinc0.2 = mgcv::gam(baseline_formula_gam, family = Gamma(link = "log"),
+                            data = df_midinc0.2, method = "REML")
 toc()
 summary(gam_midinc0.2)
 
@@ -87,9 +88,8 @@ df_midinc0.3 = df_total[which(df_total$low_income0.3 == 0), ]
 # GAM for low-income countries
 gc()
 tic()
-gam_lowinc0.3 = mgcv::gam(mig_rate_new ~ s(temp_anom, bs='cr') + s(precip_anom, bs='cr') + period +
-                            X...origin + destination, family = Gamma(link = "log"), data = df_lowinc0.3,
-                            method = "REML")
+gam_lowinc0.3 = mgcv::gam(baseline_formula_gam, family = Gamma(link = "log"),
+                            data = df_lowinc0.3, method = "REML")
 toc()
 summary(gam_lowinc0.3)
 
@@ -106,9 +106,8 @@ gam.check(gam_lowinc0.3)
 # GAM for middle-income countries
 gc()
 tic()
-gam_midinc0.3 = mgcv::gam(mig_rate_new ~ s(temp_anom, bs='cr') + s(precip_anom, bs='cr') + period +
-                            X...origin + destination, family = Gamma(link = "log"), data = df_midinc0.3,
-                            method = "REML")
+gam_midinc0.3 = mgcv::gam(baseline_formula_gam, family = Gamma(link = "log"),
+                            data = df_midinc0.3, method = "REML")
 toc()
 summary(gam_midinc0.3)
 
@@ -131,9 +130,8 @@ rm(df_lowinc0.2, df_midinc0.2, df_lowinc0.3, df_midinc0.3)
 # GAM for low-income countries
 gc()
 tic()
-gam_lowinc_gcv = mgcv::gam(mig_rate_new ~ s(temp_anom, bs='cr') + s(precip_anom, bs='cr') + period +
-                            X...origin + destination, family = Gamma(link = "log"), data = df_lowinc,
-                            method = "GCV.Cp")
+gam_lowinc_gcv = mgcv::gam(baseline_formula_gam, family = Gamma(link = "log"),
+                            data = df_lowinc, method = "GCV.Cp")
 toc()
 summary(gam_lowinc_gcv)
 
@@ -150,9 +148,8 @@ gam.check(gam_lowinc_gcv)
 # GAM for middle-income countries
 gc()
 tic()
-gam_midinc_gcv = mgcv::gam(mig_rate_new ~ s(temp_anom, bs='cr') + s(precip_anom, bs='cr') + period +
-                            X...origin + destination, family = Gamma(link = "log"), data = df_midinc,
-                            method = "GCV.Cp")
+gam_midinc_gcv = mgcv::gam(baseline_formula_gam, family = Gamma(link = "log"),
+                            data = df_midinc, method = "GCV.Cp")
 toc()
 summary(gam_midinc_gcv)
 
@@ -178,9 +175,8 @@ df_nonagri = df_total[which(df_total$preval_agri == 0), ]
 # GAM for agriculturally dependent countries
 gc()
 tic()
-gam_agri = mgcv::gam(mig_rate_new ~ s(temp_anom, bs='cr') + s(precip_anom, bs='cr') + period +
-                     X...origin + destination, family = Gamma(link="log"), data = df_agri,
-                     method = "REML")
+gam_agri = mgcv::gam(baseline_formula_gam, family = Gamma(link="log"),
+                            data = df_agri, method = "REML")
 toc()
 summary(gam_agri)
 
@@ -197,9 +193,8 @@ gam.check(gam_agri)
 # GAM for not agriculturally dependent countries
 gc()
 tic()
-gam_nonagri = mgcv::gam(mig_rate_new ~ s(temp_anom, bs='cr') + s(precip_anom, bs='cr') + period +
-                     X...origin + destination, family = Gamma(link="log"), data = df_nonagri,
-                     method = "REML")
+gam_nonagri = mgcv::gam(baseline_formula_gam, family = Gamma(link="log"),
+                            data = df_nonagri, method = "REML")
 toc()
 summary(gam_nonagri)
 
@@ -219,6 +214,9 @@ rm(df_agri, df_nonagri)
 
 #### Robustness check 4: include economic control variables ####
 
+# formula for regression models
+controls_formula_gam = "mig_rate_new ~ s(temp_anom, bs='cr') + s(precip_anom, bs='cr') + log_gdp_pc_ratio_origin_dest + common_lang + log_dist + civil_war + period + X...origin + destination"
+
 # log GDP per capita ratio total sample
 df_total$log_gdp_pc_ratio_origin_dest = log(df_total$gdp_pc_ratio_dest_origin)
 # log distance total sample
@@ -235,11 +233,8 @@ df_midinc$log_dist = log(df_midinc$dist)
 # GAM for low-income countries
 gc()
 tic()
-gam_lowinc_controls = mgcv::gam(df_lowinc$mig_rate_new ~ s(df_lowinc$temp_anom, bs='cr') +
-                            s(df_lowinc$precip_anom, bs='cr') + df_lowinc$log_gdp_pc_ratio_origin_dest +
-                            df_lowinc$common_lang + df_lowinc$log_dist + df_lowinc$civil_war +
-                            df_lowinc$period + df_lowinc$X...origin + df_lowinc$destination,
-                            family = Gamma(link="log"), data = df_lowinc, method = "REML")
+gam_lowinc_controls = mgcv::gam(controls_formula_gam, family = Gamma(link="log"),
+                                   data = df_lowinc, method = "REML")
 toc()
 summary(gam_lowinc_controls)
 
@@ -256,11 +251,8 @@ gam.check(gam_lowinc_controls)
 # GAM for middle-income countries
 gc()
 tic()
-gam_midinc_controls = mgcv::gam(df_midinc$mig_rate_new ~ s(df_midinc$temp_anom, bs='cr') +
-                            s(df_midinc$precip_anom, bs='cr') + df_midinc$log_gdp_pc_ratio_origin_dest +
-                            df_midinc$common_lang + df_midinc$log_dist + df_midinc$civil_war +
-                            df_midinc$period + df_midinc$X...origin + df_midinc$destination,
-                            family = Gamma(link="log"), data = df_midinc, method = "REML")
+gam_midinc_controls = mgcv::gam(controls_formula_gam, family = Gamma(link="log"),
+                                   data = df_midinc, method = "REML")
 toc()
 summary(gam_midinc_controls)
 
@@ -278,12 +270,13 @@ gam.check(gam_midinc_controls)
 
 #### Robustness check 5: estimate GAM using heat and drought month shares ####
 
+# formula for regression models
+shares_formula_gam = "mig_rate_new ~ s(share_temp_greater_1SD, bs='cr') + s(share_precip_less_1SD, bs='cr') + period + X...origin + destination"
+
 # GAM for low-income countries
 gc()
 tic()
-gam_lowinc_1sd = mgcv::gam(df_lowinc$mig_rate_new ~ s(df_lowinc$share_temp_greater_1SD, bs='cr') +
-                            s(df_lowinc$share_precip_less_1SD, bs='cr') + df_lowinc$period +
-                            df_lowinc$X...origin + df_lowinc$destination, family = Gamma(link="log"),
+gam_lowinc_1sd = mgcv::gam(shares_formula_gam, family = Gamma(link="log"),
                             data = df_lowinc, method = "REML")
 toc()
 summary(gam_lowinc_1sd)
@@ -301,9 +294,7 @@ gam.check(gam_lowinc_1sd)
 # GAM for middle-income countries
 gc()
 tic()
-gam_midinc_1sd = mgcv::gam(df_midinc$mig_rate_new ~ s(df_midinc$share_temp_greater_1SD, bs='cr') +
-                            s(df_midinc$share_precip_less_1SD, bs='cr') + df_midinc$period +
-                            df_midinc$X...origin + df_midinc$destination, family = Gamma(link="log"),
+gam_midinc_1sd = mgcv::gam(shares_formula_gam, family = Gamma(link="log"),
                             data = df_midinc, method = "REML")
 toc()
 summary(gam_midinc_1sd)
@@ -356,8 +347,8 @@ rm(i, n, agri_share_quantiles)
 # quantile 1
 gc()
 tic()
-gam_agri1 = mgcv::gam(mig_rate_new ~ s(temp_anom, bs = 'cr') + s(precip_anom, bs = 'cr') + period +
-                        X...origin + destination, family = Gamma(link="log"), data = df_agri1, method = "REML")
+gam_agri1 = mgcv::gam(baseline_formula_gam, family = Gamma(link="log"),
+                            data = df_agri1, method = "REML")
 toc()
 summary(gam_agri1)
 
@@ -374,8 +365,8 @@ gam.check(gam_agri1)
 # quantile 2
 gc()
 tic()
-gam_agri2 = mgcv::gam(mig_rate_new ~ s(temp_anom, bs = 'cr') + s(precip_anom, bs = 'cr') + period +
-                        X...origin + destination, family = Gamma(link="log"), data = df_agri2, method = "REML")
+gam_agri2 = mgcv::gam(baseline_formula_gam, family = Gamma(link="log"),
+                            data = df_agri2, method = "REML")
 toc()
 summary(gam_agri2)
 
@@ -392,8 +383,8 @@ gam.check(gam_agri2)
 # quantile 2
 gc()
 tic()
-gam_agri3 = mgcv::gam(mig_rate_new ~ s(temp_anom, bs = 'cr') + s(precip_anom, bs = 'cr') + period +
-                        X...origin + destination, family = Gamma(link="log"), data = df_agri3, method = "REML")
+gam_agri3 = mgcv::gam(baseline_formula_gam, family = Gamma(link="log"),
+                            data = df_agri3, method = "REML")
 toc()
 summary(gam_agri3)
 
@@ -410,8 +401,8 @@ gam.check(gam_agri3)
 # quantile 4
 gc()
 tic()
-gam_agri4 = mgcv::gam(mig_rate_new ~ s(temp_anom, bs = 'cr') + s(precip_anom, bs = 'cr') + period +
-                        X...origin + destination, family = Gamma(link="log"), data = df_agri4, method = "REML")
+gam_agri4 = mgcv::gam(baseline_formula_gam, family = Gamma(link="log"),
+                            data = df_agri4, method = "REML")
 toc()
 summary(gam_agri4)
 
@@ -439,8 +430,8 @@ df_lowinc_no_2sd = df_lowinc %>%
 # GAM for low-income countries excluding outliers
 gc()
 tic()
-gam_lowinc_no_2sd = mgcv::gam(mig_rate_new ~ s(temp_anom, bs='cr') + s(precip_anom, bs='cr') + period + X...origin +
-                        destination, family = Gamma(link="log"), data = df_lowinc_no_2sd, method = "REML")
+gam_lowinc_no_2sd = mgcv::gam(baseline_formula_gam, family = Gamma(link="log"),
+                                   data = df_lowinc_no_2sd, method = "REML")
 toc()
 summary(gam_lowinc_no_2sd)
 
@@ -463,8 +454,8 @@ df_midinc_no_2sd = df_midinc %>%
 # GAM for middle-income countries excluding outliers
 gc()
 tic()
-gam_midinc_no_2sd = mgcv::gam(mig_rate_new ~ s(temp_anom, bs='cr') + s(precip_anom, bs='cr') + period + X...origin +
-                                destination, family = Gamma(link="log"), data = df_midinc_no_2sd, method = "REML")
+gam_midinc_no_2sd = mgcv::gam(baseline_formula_gam, family = Gamma(link="log"),
+                                   data = df_midinc_no_2sd, method = "REML")
 toc()
 summary(gam_midinc_no_2sd)
 
