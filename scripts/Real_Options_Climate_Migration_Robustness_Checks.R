@@ -1,4 +1,13 @@
+# This R code produces robustness checks for the paper "A Real-Options 
+# Analysis of Climate Change and International Migration".
+# The paper is available via SSRN: https://papers.ssrn.com/abstract=3951942
+# Data is also available via Mendeley Data: https://doi.org/10.17632/7f5mmwxcpm.2
+
+# Marius Braun, November 2022
+
 # install required packages
+ install.packages("dplyr")
+ install.packages("readr")
  install.packages("fitdistrplus")
  install.packages("goft")
  install.packages("mgcv")
