@@ -27,9 +27,6 @@ library(tictoc)
 library(itsadug)
 library(moments)
 
-# set working directory
-setwd("C:\\Users\\Marius Braun\\Documents\\A Real-Options Analysis of Climate Change and International Migration\\Revise and resubmit 2\\Real_Options_Climate_Migration")
-
 # clear workspace
 rm(list = ls())
 
