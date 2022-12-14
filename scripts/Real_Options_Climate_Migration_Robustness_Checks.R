@@ -5,17 +5,6 @@
 
 # Marius Braun, November 2022
 
-# install required packages
- install.packages("dplyr")
- install.packages("readr")
- install.packages("fitdistrplus")
- install.packages("goft")
- install.packages("mgcv")
- install.packages("ggplot2")
- install.packages("tictoc")
- install.packages("itsadug")
- install.packages("moments")
-
 # load packages
 library(readr)
 library(dplyr)

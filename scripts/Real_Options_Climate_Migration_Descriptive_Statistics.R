@@ -5,17 +5,6 @@
 
 # Marius Braun, November 2022
 
-# install required packages
- install.packages("dplyr")
- install.packages("readr")
- install.packages("fitdistrplus")
- install.packages("goft")
- install.packages("mgcv")
- install.packages("ggplot2")
- install.packages("tictoc")
- install.packages("itsadug")
- install.packages("moments")
-
 # load packages
 library(readr)
 library(dplyr)
@@ -45,6 +34,9 @@ df_midinc = df_total[which(df_total$low_income == 0), ]
 #### Descriptive statistics ####
 
 # create density plot of migration rates
+
+# migration rates scaled at and distribution cut off at 10 
+# for illustrative purposes
 df_total$mig_rate_scaled = df_total$mig_rate * 1000000
 new_df = df_total[which(df_total$mig_rate_scaled < 10), ]
 d = density(new_df$mig_rate_scaled)
