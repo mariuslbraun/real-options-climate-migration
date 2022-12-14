@@ -53,9 +53,12 @@ compareML(gam_total, g_total)
 
 # plot smooth nonparametric functions of temperature and precipitation anomalies
 plot(gam_total, shade = TRUE, xlab = "Temperature anomalies", ylab = "", cex.lab = 1.4, cex.axis = 1.3)
+# label y-axis
 title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
 plot(gam_total, shade = TRUE, xlab = "Precipitation anomalies", ylab = "", cex.lab = 1.4, cex.axis = 1.3)
+# label y-axis
 title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
+# add axes to plot
 abline(h=0, v=0, lty=2)
 gam.check(gam_total)
 
