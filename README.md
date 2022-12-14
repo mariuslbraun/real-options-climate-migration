@@ -1,4 +1,4 @@
-This repo contains R code as well as the dataset used for the empirical analysis of the research paper "A Real-Options Analysis of Climate Change and International Migration".
+This repo contains R code as well as the [dataset](prepared/Dataset_final.csv) used for the empirical analysis of the research paper "A Real-Options Analysis of Climate Change and International Migration".
 In the paper, semiparametric regression models are used to investigate nonlinear effects of climate change on international migration.
 You can find the latest version of the paper on SSRN: https://papers.ssrn.com/abstract=3951942
 
