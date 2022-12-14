@@ -6,8 +6,8 @@ Follow these steps to replicate the results of the paper:
 
 ## 1. Setting up the R environment
 
-First, open the R project file "Real_Options_Climate_Migration.Rproj". It is important to work in the R project, as it is associated with the project folder and will set the working directory accordingly.
-After opening the R project, open "setup.R". Running the file will set up an R environment using the `renv` package, which manages project-local R dependencies to ensure
+First, open the R project file [Real_Options_Climate_Migration.Rproj](Real_Options_Climate_Migration.Rproj) in RStudio. It is important to work in the R project, as it is associated with the project folder and will set the working directory accordingly.
+After opening the R project, open [setup.R](setup.R). Running the file will set up an R environment using the `renv` package, which manages project-local R dependencies to ensure
 that existing data analysis workflows work as they did before; for more information see https://rstudio.github.io/renv/articles/renv.html
 
 Proceed as follows:
@@ -26,12 +26,12 @@ to load the CRAN snapshot from RStudio Package Manager. This will freeze to the 
 
 ## 2. Descriptive statistics
 
-"Real_Options_Climate_Migration_Descriptive_Statistics.R" produces descriptive statistics and density plots of the main variables for low- and middle-income countries.
+[Real_Options_Climate_Migration_Descriptive_Statistics.R](scripts/Real_Options_Climate_Migration_Descriptive_Statistics.R) produces descriptive statistics and density plots of the main variables for low- and middle-income countries.
 In addition, t-tests comparing low- and middle-income sample means for the main variables are provided.
 
 ## 3. Main Results
 
-"Real_Options_Climate_Migration_Results.R" produces the main results of the paper. Separate data frames are created for low- and middle-income countries, and all
+[Real_Options_Climate_Migration_Results.R](scripts/Real_Options_Climate_Migration_Results.R) produces the main results of the paper. Separate data frames are created for low- and middle-income countries, and all
 models are estimated separately for low- and middle-income countries.
 The general workflow is the same for all of the regression models:
 
@@ -61,7 +61,7 @@ Proceed analogously for all other models.
 
 ## 4. Robustness Checks
 
-"Real_Options_Climate_Migration_Robustness_Checks.R" produces a host of robustness checks of the main results.
+[Real_Options_Climate_Migration_Robustness_Checks.R](scripts/Real_Options_Climate_Migration_Robustness_Checks.R) produces a host of robustness checks of the main results.
 The general workflow for the models is identical to the one outlined for the main results.
 
 ## Sources
