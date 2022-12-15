@@ -24,6 +24,8 @@ to load the CRAN snapshot from RStudio Package Manager. This will freeze to the 
 
 5. Call `renv::snapshot()` to save the state of the project library.
 
+The state of the library is saved in the [renv.lock](renv.lock) file.
+
 ## 2. Descriptive statistics
 
 [Real_Options_Climate_Migration_Descriptive_Statistics.R](scripts/Real_Options_Climate_Migration_Descriptive_Statistics.R) produces descriptive statistics and density plots of the main variables for low- and middle-income countries.
