@@ -15,6 +15,7 @@ install.packages("renv")
 renv::init(bare = TRUE)
 
 # Install the packages
+Sys.setenv(RENV_DOWNLOAD_METHOD = getOption("download.file.method"))
 install.packages(c(
   "dplyr", "readr", "tidyverse", "fitdistrplus", "goft", "mgcv", "ggplot2",
   "tictoc", "itsadug", "moments"
