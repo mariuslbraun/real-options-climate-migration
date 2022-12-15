@@ -6,9 +6,9 @@ Follow these steps to replicate the results of the paper:
 
 ## 1. Setting up the R environment
 
-First, open the R project file [Real_Options_Climate_Migration.Rproj](Real_Options_Climate_Migration.Rproj) in RStudio. It is important to work in the R project, as it is associated with the project folder and will set the working directory accordingly.
-After opening the R project, open [setup.R](setup.R). Running the file will set up an R environment using the `renv` package, which manages project-local R dependencies to ensure
-that existing data analysis workflows work as they did before; for more information see https://rstudio.github.io/renv/articles/renv.html
+First, open the R project file [Real_Options_Climate_Migration.Rproj](Real_Options_Climate_Migration.Rproj) in RStudio. It is important to work in the R project, as it is associated with the directory that the project is located in and will set the working directory accordingly.
+After opening the R project, open [setup.R](setup.R). Running the file will set up an R environment using the `renv` package, which manages project-local R dependencies to ensure that existing data analysis workflows work as they did before;
+for more information see https://rstudio.github.io/renv/articles/renv.html
 
 Proceed as follows:
 
