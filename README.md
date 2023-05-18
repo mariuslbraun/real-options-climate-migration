@@ -1,6 +1,5 @@
-This repo contains R code as well as the [dataset](prepared/Dataset_final.csv) used for the empirical analysis of the research paper "A Real-Options Analysis of Climate Change and International Migration".
+This repo contains R code as well as the [dataset](prepared/Dataset_final.csv) used for the empirical analysis of the research paper "A Real-Options Analysis of Climate Change and International Migration", published in *Environment and Development Economics* (Braun 2023).
 In the paper, semiparametric regression models are used to investigate nonlinear effects of climate change on international migration.
-You can find the latest version of the paper on SSRN: https://papers.ssrn.com/abstract=3951942
 
 Follow these steps to replicate the results of the paper:
 
@@ -66,7 +65,9 @@ Proceed analogously for all other models.
 [Real_Options_Climate_Migration_Robustness_Checks.R](scripts/Real_Options_Climate_Migration_Robustness_Checks.R) produces a host of robustness checks of the main results.
 The general workflow for the models is identical to the one outlined for the main results.
 
-## Sources
+## References
+
+Braun, M. (2023), A real-options analysis of climate change and international migration, *Environment and Development Economics*, 1-20. https://doi.org/10.1017/S1355770X23000013
 
 Wood, S.N. (2001), mgcv: GAMs and Generalized Ridge Regression for R, *R News* 1, 20-25.
 
