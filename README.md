@@ -62,7 +62,15 @@ Proceed analogously for all other models.
 
 ## 4. Robustness Checks
 
-[Real_Options_Climate_Migration_Robustness_Checks.R](scripts/Real_Options_Climate_Migration_Robustness_Checks.R) produces a host of robustness checks of the main results.
+[Real_Options_Climate_Migration_Robustness_Checks.R](scripts/Real_Options_Climate_Migration_Robustness_Checks.R) produces a host of robustness checks of the main results, including
+
+- alternative definitions of low- and middle-income countries,
+- alternative smoothing parameter selection method,
+- interacting measures of climatic anomalies with a factor variable indicating origin countries’ quartile in the distribution of agricultural value added as a share of GDP,
+- including a number of control variables identified as important determinants of international migration in the literature,
+- use five-year period shares of heat and drought months as alternative measures of climatic anomalies,
+- excluding observations with temperature anomalies more than two standard deviations above or precipitation anomalies more than two standard deviations below the respective sample mean.
+
 The general workflow for the models is identical to the one outlined for the main results.
 
 ## References
