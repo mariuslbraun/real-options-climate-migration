@@ -24,93 +24,91 @@ df_total = read.csv("prepared\\Dataset_final.csv")
 df_total$mig_rate_new = df_total$mig_rate * 100
 
 # create separate datasets for low- and middle-income countries
-# low-income countries
-df_lowinc = df_total[which(df_total$low_income == 1), ]
-# middle-income countries
-df_midinc = df_total[which(df_total$low_income == 0), ]
+inc_types = c("lowinc", "midinc")
+for(i in 1:length(inc_types)) {
+  if(inc_types[i] == "lowinc") {
+    df = df_total %>%
+      filter(low_income == 1)
+  } else {
+    df = df_total %>%
+      filter(low_income == 0)
+  }
+  assign(
+    x = paste(
+      "df",
+      inc_types[i],
+      sep = "_"
+    ),
+    value = df
+  )
+}
+rm(i, df)
 
 
 
-#### Descriptive statistics ####
-
-# create density plot of migration rates
-
+#### 1.1 Density plot of migration rates ####
 # migration rates scaled at and distribution cut off at 10 
 # for illustrative purposes
 df_total$mig_rate_scaled = df_total$mig_rate * 1000000
-new_df = df_total[which(df_total$mig_rate_scaled < 10), ]
+new_df = df_total %>%
+  filter(
+    mig_rate_scaled < 10
+    )
 d = density(new_df$mig_rate_scaled)
+pdf("figures/density_plots/density_mig_rate.pdf")
 par(mar = c(5, 4, 2, 2) + 0.1)
 plot(d, main = "")
 abline(v = mean(new_df$mig_rate_scaled), lty = 2)
-df_total = subset(df_total, select = -c(mig_rate_scaled))
-remove(d, new_df)
+dev.off()
+df_total = df_total %>% 
+  dplyr::select(
+    -mig_rate_scaled
+    )
+rm(d, new_df)
 
-# bilateral migration rate
-# middle-income countries
-mean(df_midinc$mig_rate_new)
-sd(df_midinc$mig_rate_new)
-sum(!is.na(df_midinc$mig_rate_new))
 
-# low-income countries
-mean(df_lowinc$mig_rate_new)
-sd(df_lowinc$mig_rate_new)
-sum(!is.na(df_lowinc$mig_rate_new))
 
-# temperature anomaly
-# middle-income countries
-mean(df_midinc$temp_anom)
-sd(df_midinc$temp_anom)
-sum(!is.na(unique(df_midinc$temp_anom)))
+#### 1.2 Descriptive statistics of main variables ####
+# vector of variable names
+vars = c(
+  "mig_rate_new",
+  "temp_anom",
+  "precip_anom",
+  "share_temp_greater_1SD",
+  "share_precip_less_1SD",
+  "gdp_pc_origin"
+  )
 
-# low-income countries
-mean(df_lowinc$temp_anom)
-sd(df_lowinc$temp_anom)
-sum(!is.na(unique(df_lowinc$temp_anom)))
-
-# precipitation anomaly
-# middle-income countries
-mean(df_midinc$precip_anom)
-sd(df_midinc$precip_anom)
-sum(!is.na(unique(df_midinc$precip_anom)))
-
-# low-income countries
-mean(df_lowinc$precip_anom)
-sd(df_lowinc$precip_anom)
-sum(!is.na(unique(df_lowinc$precip_anom)))
-
-# share of heat months
-# middle-income countries
-mean(df_midinc$share_temp_greater_1SD)
-sd(df_midinc$share_temp_greater_1SD)
-sum(!is.na(unique(df_midinc$share_temp_greater_1SD)))
-
-# low-income countries
-mean(df_lowinc$share_temp_greater_1SD)
-sd(df_lowinc$share_temp_greater_1SD)
-sum(!is.na(unique(df_lowinc$share_temp_greater_1SD)))
-
-# share of drought months
-# middle-income countries
-mean(df_midinc$share_precip_less_1SD)
-sd(df_midinc$share_precip_less_1SD)
-sum(!is.na(unique(df_midinc$share_precip_less_1SD)))
-
-# low-income countries
-mean(df_lowinc$share_precip_less_1SD)
-sd(df_lowinc$share_precip_less_1SD)
-sum(!is.na(unique(df_lowinc$share_precip_less_1SD)))
-
-# GDP per capita
-# middle-income countries
-mean(df_midinc$gdp_pc_origin)
-sd(df_midinc$gdp_pc_origin)
-sum(!is.na(unique(df_midinc$gdp_pc_origin)))
-
-# low-income countries
-mean(df_lowinc$gdp_pc_origin)
-sd(df_lowinc$gdp_pc_origin)
-sum(!is.na(unique(df_lowinc$gdp_pc_origin)))
+# iterate over variables and print mean, standard deviation
+# and number of observations
+for(i in 1:length(inc_types)) {
+  for(j in 1:length(vars)) {
+    df_name = paste(
+      "df",
+      inc_types[i],
+      sep = "_"
+    )
+    cat(
+      vars[j],
+      mean(
+        get(df_name)[vars[j]][, ],
+        na.rm = T
+      ),
+      sd(
+        get(df_name)[vars[j]][, ],
+        na.rm = T
+      ),
+      sum(
+        !is.na(
+          get(df_name)[vars[j]][, ]
+        )
+      ),
+      "\n",
+      sep = " "
+    )
+  }
+}
+rm(i, j, df_name)
 
 # migration rates to neighboring countries
 mig_rate_midinc_contig = df_midinc %>% filter(contiguity == 1) %>%
@@ -157,67 +155,79 @@ mean(mig_rate_lowinc_nonOECD_dest$mig_rate_new)
 sd(mig_rate_lowinc_nonOECD_dest$mig_rate_new)
 
 # t-test difference between means of low- and middle-income countries
-ttest.mig_rate_new = t.test(df_lowinc$mig_rate_new, df_midinc$mig_rate_new)
-ttest.mig_rate_new
-ttest.temp_anom = t.test(df_lowinc$temp_anom, df_midinc$temp_anom)
-ttest.temp_anom
-ttest.precip_anom = t.test(df_lowinc$precip_anom, df_midinc$precip_anom)
-ttest.precip_anom
-ttest.share_temp_greater_1SD = t.test(df_lowinc$share_temp_greater_1SD, df_midinc$share_temp_greater_1SD)
-ttest.share_temp_greater_1SD
-ttest.share_precip_less_1SD = t.test(df_lowinc$share_precip_less_1SD, df_midinc$share_precip_less_1SD)
-ttest.share_precip_less_1SD
-ttest.gdp_per_capita = t.test(df_lowinc$gdp_pc_origin, df_midinc$gdp_pc_origin)
-ttest.gdp_per_capita
+for(i in 1:length(vars)) {
+  assign(
+    x = paste(
+      "ttest",
+      vars[i],
+      sep = "."
+    ),
+    value = t.test(
+      df_lowinc[vars[i]][, ],
+      df_midinc[vars[i]][, ]
+    )
+  )
+}
+rm(i)
 
 rm(mig_rate_midinc_contig, mig_rate_lowinc_contig,
        mig_rate_midinc_noncontig, mig_rate_lowinc_noncontig,
        mig_rate_midinc_OECD_dest, mig_rate_lowinc_OECD_dest,
        mig_rate_midinc_nonOECD_dest, mig_rate_lowinc_nonOECD_dest)
-rm(ttest.mig_rate_new, ttest.temp_anom, ttest.precip_anom, ttest.share_temp_greater_1SD,
-       ttest.share_precip_less_1SD, ttest.gdp_per_capita)
 
-# density plots of temperature and precipitation anomalies
 
-# temperature anomalies in low-income countries
-d_temp_anom_lowinc = density(df_lowinc$temp_anom)
-par(mar = c(5, 4, 2, 2) + 0.1)
-plot(d_temp_anom_lowinc, main = "")
-abline(v = mean(df_lowinc$temp_anom), lty = 2)
 
-# precipitation anomalies in low-income countries
-d_precip_anom_lowinc = density(df_lowinc$precip_anom)
-par(mar = c(5, 4, 2, 2) + 0.1)
-plot(d_precip_anom_lowinc, main = "")
-abline(v = mean(df_lowinc$precip_anom), lty = 2)
-
-# temperature anomalies in middle-income countries
-d_temp_anom_midinc = density(df_midinc$temp_anom)
-par(mar = c(5, 4, 2, 2) + 0.1)
-plot(d_temp_anom_midinc, main = "")
-abline(v = mean(df_midinc$temp_anom), lty = 2)
-
-# precipitation anomalies in middle-income countries
-d_precip_anom_midinc = density(df_midinc$precip_anom)
-par(mar = c(5, 4, 2, 2) + 0.1)
-plot(d_precip_anom_midinc, main = "")
-abline(v = mean(df_midinc$precip_anom), lty = 2)
-
-rm(d_precip_anom_lowinc, d_precip_anom_midinc, d_temp_anom_lowinc,
-   d_temp_anom_midinc)
-
-# skewness and excess kurtosis of temperature and precipitation anomalies
-# low-income countries
-skewness(df_lowinc$temp_anom)
-kurtosis(df_lowinc$temp_anom)
-skewness(df_lowinc$precip_anom)
-kurtosis(df_lowinc$precip_anom)
-
-# middle-income countries
-skewness(df_midinc$temp_anom)
-kurtosis(df_midinc$temp_anom)
-skewness(df_midinc$precip_anom)
-kurtosis(df_midinc$precip_anom)
+#### 1.3 Density plots of temperature and precipitation anomalies ####
+climate_vars = c("temp_anom", "precip_anom")
+for(i in 1:length(inc_types)) {
+  for(j in 1:length(climate_vars)) {
+    # compute density
+    density_name = paste(
+      "density",
+      climate_vars[j],
+      inc_types[i],
+      sep = "_"
+    )
+    climate_var = get(
+      paste(
+        "df",
+        inc_types[i],
+        sep = "_"
+      )
+    )[climate_vars[j]][, ]
+    
+    assign(
+      x = density_name,
+      value = density(
+        climate_var
+      )
+    )
+    # create plot and save as PDF file
+    pdf(
+      paste0(
+        "figures/density_plots/",
+        density_name,
+        ".pdf"
+      )
+    )
+    par(mar = c(5, 4, 2, 2) + 0.1)
+    plot(get(density_name), main = "")
+    abline(v = mean(climate_var), lty = 2)
+    dev.off()
+    
+    # skewness and kurtosis of climatic variables
+    cat(
+      "Skewness and kurtosis of ",
+      inc_types[i],
+      climate_vars[j],
+      "\n",
+      skewness(climate_var),
+      kurtosis(climate_var),
+      "\n"
+    )
+  }
+}
+rm(i, j, density_name, climate_var)
 
 # countries that experienced extreme temperature and precipitation anomalies
 # (+2 sd and -2 sd respectively)
