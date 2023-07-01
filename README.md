@@ -1,6 +1,5 @@
-This repo contains R code as well as the [dataset](prepared/Dataset_final.csv) used for the empirical analysis of the research paper "A Real-Options Analysis of Climate Change and International Migration".
+This repo contains R code as well as the [dataset](prepared/Dataset_final.csv) used for the empirical analysis of the research paper "A Real-Options Analysis of Climate Change and International Migration", published in *Environment and Development Economics* (Braun 2023).
 In the paper, semiparametric regression models are used to investigate nonlinear effects of climate change on international migration.
-You can find the latest version of the paper on SSRN: https://papers.ssrn.com/abstract=3951942
 
 Follow these steps to replicate the results of the paper:
 
@@ -63,10 +62,20 @@ Proceed analogously for all other models.
 
 ## 4. Robustness Checks
 
-[Real_Options_Climate_Migration_Robustness_Checks.R](scripts/Real_Options_Climate_Migration_Robustness_Checks.R) produces a host of robustness checks of the main results.
+[Real_Options_Climate_Migration_Robustness_Checks.R](scripts/Real_Options_Climate_Migration_Robustness_Checks.R) produces a host of robustness checks of the main results, including
+
+- alternative definitions of low- and middle-income countries,
+- alternative smoothing parameter selection method,
+- interacting measures of climatic anomalies with a factor variable indicating origin countries’ quartile in the distribution of agricultural value added as a share of GDP,
+- including a number of control variables identified as important determinants of international migration in the literature,
+- use five-year period shares of heat and drought months as alternative measures of climatic anomalies,
+- excluding observations with temperature anomalies more than two standard deviations above or precipitation anomalies more than two standard deviations below the respective sample mean.
+
 The general workflow for the models is identical to the one outlined for the main results.
 
-## Sources
+## References
+
+Braun, M. (2023), A real-options analysis of climate change and international migration, *Environment and Development Economics*, 1-20. https://doi.org/10.1017/S1355770X23000013
 
 Wood, S.N. (2001), mgcv: GAMs and Generalized Ridge Regression for R, *R News* 1, 20-25.
 
