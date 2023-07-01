@@ -110,49 +110,72 @@ for(i in 1:length(inc_types)) {
 }
 rm(i, j, df_name)
 
-# migration rates to neighboring countries
-mig_rate_midinc_contig = df_midinc %>% filter(contiguity == 1) %>%
-                                          dplyr::select(mig_rate_new)
-mean(mig_rate_midinc_contig$mig_rate_new)
-sd(mig_rate_midinc_contig$mig_rate_new)
+# migration rates to neighboring and OECD countries
+contig_types = c("contig", "noncontig")
+OECD_dest_types = c("OECD_dest", "nonOECD_dest")
+for(i in 1:length(inc_types)) {
+  df_name = paste(
+    "df",
+    inc_types[i],
+    sep = "_"
+  )
+  # contiguity
+  for(j in 1:length(contig_types)) {
+    var_name = paste(
+      "mig_rate",
+      inc_types[i],
+      contig_types[j],
+      sep = "_"
+    )
+    var_value = get(df_name) %>%
+      filter(contiguity == as.numeric(
+        contig_types[j] == "contig"
+        )
+      ) %>%
+      dplyr::select(mig_rate_new)
+    
+    assign(
+      x = var_name,
+      value = var_value
+    )
+    cat(
+      var_name,
+      mean(var_value[, 1], na.rm = T),
+      sd(var_value[, 1], na.rm = T),
+      "\n",
+      sep = " "
+    )
+  }
+  
+  # OECD destination countries
+  for(k in 1:length(OECD_dest_types)) {
+    var_name = paste(
+      "mig_rate",
+      inc_types[i],
+      OECD_dest_types[k],
+      sep = "_"
+    )
+    var_value = get(df_name) %>%
+      filter(OECD_dest == as.numeric(
+        OECD_dest_types[k] == "OECD_dest"
+        )
+      ) %>%
+      dplyr::select(mig_rate_new)
 
-mig_rate_lowinc_contig = df_lowinc %>% filter(contiguity == 1) %>%
-                                          dplyr::select(mig_rate_new)
-mean(mig_rate_lowinc_contig$mig_rate_new)
-sd(mig_rate_lowinc_contig$mig_rate_new)
-
-# migration rates to non-neighboring countries
-mig_rate_midinc_noncontig = df_midinc %>% filter(contiguity == 0) %>%
-                                   dplyr::select(mig_rate_new)
-mean(mig_rate_midinc_noncontig$mig_rate_new)
-sd(mig_rate_midinc_noncontig$mig_rate_new)
-
-mig_rate_lowinc_noncontig = df_lowinc %>% filter(contiguity == 0) %>%
-                                   dplyr::select(mig_rate_new)
-mean(mig_rate_lowinc_noncontig$mig_rate_new)
-sd(mig_rate_lowinc_noncontig$mig_rate_new)
-
-# migration rates to OECD countries
-mig_rate_midinc_OECD_dest = df_midinc %>% filter(OECD_dest == 1) %>%
-                                   dplyr::select(mig_rate_new)
-mean(mig_rate_midinc_OECD_dest$mig_rate_new)
-sd(mig_rate_midinc_OECD_dest$mig_rate_new)
-
-mig_rate_lowinc_OECD_dest = df_lowinc %>% filter(OECD_dest == 1) %>%
-                                   dplyr::select(mig_rate_new)
-mean(mig_rate_lowinc_OECD_dest$mig_rate_new)
-sd(mig_rate_lowinc_OECD_dest$mig_rate_new)
-
-# migration rates to non-OECD countries
-mig_rate_midinc_nonOECD_dest = df_midinc %>% filter(OECD_dest == 0) %>%
-                                   dplyr::select(mig_rate_new)
-mean(mig_rate_midinc_nonOECD_dest$mig_rate_new)
-sd(mig_rate_midinc_nonOECD_dest$mig_rate_new)
-
-mig_rate_lowinc_nonOECD_dest = df_lowinc %>% filter(OECD_dest == 0) %>%
-                                   dplyr::select(mig_rate_new)
-mean(mig_rate_lowinc_nonOECD_dest$mig_rate_new)
-sd(mig_rate_lowinc_nonOECD_dest$mig_rate_new)
+    assign(
+      x = var_name,
+      value = var_value
+    )
+    cat(
+      var_name,
+      mean(var_value[, 1], na.rm = T),
+      sd(var_value[, 1], na.rm = T),
+      "\n",
+      sep = " "
+    )
+  }
+}
+rm(i, j, k, df_name, var_name, var_value)
 
 # t-test difference between means of low- and middle-income countries
 for(i in 1:length(vars)) {
