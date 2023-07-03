@@ -254,35 +254,58 @@ rm(i, j, density_name, climate_var)
 
 # countries that experienced extreme temperature and precipitation anomalies
 # (+2 sd and -2 sd respectively)
-# low-income countries
-countries_lowinc_temp_plus_2sd = (df_lowinc %>% filter(temp_anom > (mean(temp_anom) +
-                                  2 * sd(temp_anom))))$X...origin
-# extreme positive temperature anomalies
-unique(countries_lowinc_temp_plus_2sd)
-# calculate share of observations of low-income sample
-(length(countries_lowinc_temp_plus_2sd) / length(df_lowinc$temp_anom)) * 100
-
-countries_lowinc_precip_minus_2sd = (df_lowinc %>% filter(precip_anom <
-                                     (mean(precip_anom) - 2 * sd(precip_anom))))$X...origin
-# extreme negative precipitation anomalies
-unique(countries_lowinc_precip_minus_2sd)
-# calculate share of observations of low-income sample
-(length(countries_lowinc_precip_minus_2sd) / length(df_lowinc$precip_anom)) * 100
-
-# middle-income countries
-countries_midinc_temp_plus_2sd = (df_midinc %>% filter(temp_anom > (mean(temp_anom) +
-                                  2 * sd(temp_anom))))$X...origin
-# extreme positive temperature anomalies
-unique(countries_midinc_temp_plus_2sd)
-# calculate share of observations of middle-income sample
-(length(countries_midinc_temp_plus_2sd) / length(df_midinc$temp_anom)) * 100
-
-countries_midinc_precip_minus_2sd = (df_midinc %>% filter(precip_anom <
-                                     (mean(precip_anom) - 2 * sd(precip_anom))))$X...origin
-# extreme negative precipitation anomalies
-unique(countries_midinc_precip_minus_2sd)
-# calculate share of observations of low-income sample
-(length(countries_midinc_precip_minus_2sd) / length(df_midinc$precip_anom)) * 100
-
-rm(countries_lowinc_temp_plus_2sd, countries_lowinc_precip_minus_2sd,
-   countries_midinc_temp_plus_2sd, countries_midinc_precip_minus_2sd)
+for(i in 1:length(inc_types)) {
+  for(j in 1:length(climate_vars)) {
+    df_name = paste(
+      "df",
+      inc_types[i],
+      sep = "_"
+    )
+    
+    sign = ifelse(
+      climate_vars[j] == "temp_anom",
+      "plus",
+      "minus"
+    )
+    
+    extreme_name = paste(
+      "countries",
+      inc_types[i],
+      climate_vars[j],
+      sign,
+      "2sd",
+      sep = "_"
+    )
+    
+    # get countries that experienced extreme temperature and precipitation anomalies
+    assign(
+      x = extreme_name,
+      value = ifelse(
+        climate_vars[j] == "temp_anom",
+        # temperature extremes
+        (get(df_name) %>%
+           filter(
+             temp_anom > (mean(temp_anom) + 2 * sd(temp_anom))
+             )
+         ),
+        # precipitation extremes
+        (get(df_name) %>%
+           filter(
+             precip_anom < (mean(precip_anom) - 2 * sd(precip_anom))
+             )
+         )
+      )
+    )
+    extreme_share = (
+      nrow(as.data.frame(get(extreme_name))) /
+        length(get(df_name)[climate_vars[j]][, ])
+    ) * 100
+    cat(
+      extreme_name,
+      extreme_share,
+      "\n",
+      sep = " "
+    )
+  }
+}
+rm(i, j, df_name, extreme_name, extreme_share)
