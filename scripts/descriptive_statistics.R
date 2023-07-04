@@ -22,27 +22,33 @@ rm(list = ls())
 # load dataset (non-OECD countries only)
 df_total = read.csv("prepared\\Dataset_final.csv")
 df_total$mig_rate_new = df_total$mig_rate * 100
+saveRDS(df_total, "prepared/df_total.rds")
 
 # create separate datasets for low- and middle-income countries
 inc_types = c("lowinc", "midinc")
 for(i in 1:length(inc_types)) {
-  if(inc_types[i] == "lowinc") {
-    df = df_total %>%
-      filter(low_income == 1)
-  } else {
-    df = df_total %>%
-      filter(low_income == 0)
-  }
+  df_name = paste(
+    "df",
+    inc_types[i],
+    sep = "_"
+  )
+  df = df_total %>%
+    filter(
+      low_income == as.numeric(inc_types[i] == "lowinc")
+    )
   assign(
-    x = paste(
-      "df",
-      inc_types[i],
-      sep = "_"
-    ),
+    x = df_name,
     value = df
   )
+  saveRDS(df,
+          paste0(
+            "prepared/",
+            df_name,
+            ".rds"
+          )
+  )
 }
-rm(i, df)
+rm(i, df, df_name)
 
 
 

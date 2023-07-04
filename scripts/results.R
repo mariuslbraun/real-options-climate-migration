@@ -19,15 +19,26 @@ library(moments)
 # clear workspace
 rm(list = ls())
 
-# load dataset (non-OECD countries only)
-df_total = read.csv("prepared\\Dataset_final.csv")
-df_total$mig_rate_new = df_total$mig_rate * 100
-
-# create separate datasets for low- and middle-income countries
-# low-income countries
-df_lowinc = df_total[which(df_total$low_income == 1), ]
-# middle-income countries
-df_midinc = df_total[which(df_total$low_income == 0), ]
+# load low- and middle-income data frames
+samples = c("total", "lowinc", "midinc")
+for(i in 1:length(samples)) {
+  df_name = paste(
+    "df",
+    samples[i],
+    sep = "_"
+  )
+  assign(
+    x = df_name,
+    readRDS(
+      paste0(
+        "prepared/",
+        df_name,
+        ".rds"
+      )
+    )
+  )
+}
+rm(i, df_name)
 
 
 
@@ -37,6 +48,47 @@ df_midinc = df_total[which(df_total$low_income == 0), ]
 baseline_formula_gam = "mig_rate_new ~ s(temp_anom, bs='cr') + s(precip_anom, bs='cr') + period + X...origin + destination"
 baseline_formula_glm = "mig_rate_new ~ temp_anom + precip_anom + period + X...origin + destination"
 
+model_types = c("gam", "glm")
+# estimate GAMs for total, low-income and middle-income sample
+# (and GLMs for comparison)
+tic()
+for(i in 1:length(samples)) {
+  df_name = paste(
+    "df",
+    samples[i],
+    sep = "_"
+  )
+  for(j in 1:length(model_types)) {
+    # get regression formula
+    formula_value = as.formula(
+      get(
+        paste(
+          "baseline_formula",
+          model_types[j],
+          sep = "_"
+        )
+      )
+    )
+    
+    # estimate model
+    gc()
+    assign(
+      x = paste(
+        model_types[j],
+        samples[i],
+        sep = "_"
+      ),
+      value = mgcv::gam(
+        formula = formula_value,
+        family = Gamma(link="log"),
+        data = get(df_name),
+        method = "REML"
+      )
+    )
+  }
+}
+toc()
+rm(i, j, df_name, formula_value)
 # GAM for total sample
 gc()
 tic()
