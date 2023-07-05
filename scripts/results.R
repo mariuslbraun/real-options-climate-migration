@@ -15,11 +15,12 @@ library(ggplot2)
 library(tictoc)
 library(itsadug)
 library(moments)
+library(tidymv)
 
 # clear workspace
 rm(list = ls())
 
-# load low- and middle-income data frames
+# load data frames
 samples = c("total", "lowinc", "midinc")
 for(i in 1:length(samples)) {
   df_name = paste(
@@ -49,6 +50,7 @@ baseline_formula_gam = "mig_rate_new ~ s(temp_anom, bs='cr') + s(precip_anom, bs
 baseline_formula_glm = "mig_rate_new ~ temp_anom + precip_anom + period + X...origin + destination"
 
 model_types = c("gam", "glm")
+climate_vars = c("temp_anom", "precip_anom")
 # estimate GAMs for total, low-income and middle-income sample
 # (and GLMs for comparison)
 tic()
@@ -70,14 +72,17 @@ for(i in 1:length(samples)) {
       )
     )
     
+    # create model name
+    model_name = paste(
+      model_types[j],
+      samples[i],
+      sep = "_"
+    )
+    
     # estimate model
     gc()
     assign(
-      x = paste(
-        model_types[j],
-        samples[i],
-        sep = "_"
-      ),
+      x = model_name,
       value = mgcv::gam(
         formula = formula_value,
         family = Gamma(link="log"),
@@ -85,10 +90,36 @@ for(i in 1:length(samples)) {
         method = "REML"
       )
     )
+    
+    # save model as RDS file
+    saveRDS(
+      get(model_name),
+      paste0(
+        "models/main_results/",
+        model_name,
+        ".rds"
+      )
+    )
+    
+    for(k in 1:length(climate_vars)) {
+      # plot smooths
+      if(model_types == "gam") {
+        plot_name = paste(
+          model_types[j],
+          climate_vars[k],
+          samples[i],
+          sep = "_"
+        )
+        plot_smooth(
+          x = get(model_name),
+          view = temp_anom
+        )
+      }
+    }
   }
 }
 toc()
-rm(i, j, df_name, formula_value)
+rm(i, j, df_name, formula_value, model_name)
 # GAM for total sample
 gc()
 tic()

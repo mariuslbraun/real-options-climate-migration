@@ -11,18 +11,18 @@
   "Packages": {
     "MASS": {
       "Package": "MASS",
-      "Version": "7.3-53",
+      "Version": "7.3-58.1",
       "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "d1bc1c8e9c0ace57ec9ffea01021d45f",
+      "Repository": "RSPM",
+      "Hash": "762e1804143a332333c054759f89a706",
       "Requirements": []
     },
     "Matrix": {
       "Package": "Matrix",
-      "Version": "1.2-18",
+      "Version": "1.5-1",
       "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "08588806cba69f04797dab50627428ed",
+      "Repository": "RSPM",
+      "Hash": "539dc0c0c05636812f1080f473d2c177",
       "Requirements": [
         "lattice"
       ]
@@ -280,10 +280,10 @@
     },
     "lattice": {
       "Package": "lattice",
-      "Version": "0.20-41",
+      "Version": "0.20-45",
       "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "fbd9285028b0263d76d18c95ae51a53d",
+      "Repository": "RSPM",
+      "Hash": "b64cdbb2b340437c4ee047a1f4c4377b",
       "Requirements": []
     },
     "lifecycle": {
@@ -345,10 +345,10 @@
     },
     "nlme": {
       "Package": "nlme",
-      "Version": "3.1-149",
+      "Version": "3.1-160",
       "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "7c24ab3a1e3afe50388eb2d893aab255",
+      "Repository": "RSPM",
+      "Hash": "02e3c6e7df163aafa8477225e6827bc5",
       "Requirements": [
         "lattice"
       ]
@@ -412,6 +412,17 @@
         "crayon",
         "hms",
         "prettyunits"
+      ]
+    },
+    "purrr": {
+      "Package": "purrr",
+      "Version": "0.3.5",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Hash": "54842a2443c76267152eface28d9e90a",
+      "Requirements": [
+        "magrittr",
+        "rlang"
       ]
     },
     "quantreg": {
@@ -495,10 +506,10 @@
     },
     "survival": {
       "Package": "survival",
-      "Version": "3.2-7",
+      "Version": "3.4-0",
       "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "39c4ac6d22dad33db0ee37b40810ea12",
+      "Repository": "RSPM",
+      "Hash": "04411ae66ab4659230c067c32966fc20",
       "Requirements": [
         "Matrix"
       ]
@@ -526,6 +537,42 @@
       "Repository": "RSPM",
       "Hash": "e1a2cb41e4be769a941c90c11469db90",
       "Requirements": []
+    },
+    "tidymv": {
+      "Package": "tidymv",
+      "Version": "3.3.2",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Hash": "c093da26d333022823589ac9f4247175",
+      "Requirements": [
+        "dplyr",
+        "ggplot2",
+        "magrittr",
+        "mgcv",
+        "rlang",
+        "tibble",
+        "tidyr"
+      ]
+    },
+    "tidyr": {
+      "Package": "tidyr",
+      "Version": "1.2.1",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Hash": "cdb403db0de33ccd1b6f53b83736efa8",
+      "Requirements": [
+        "cpp11",
+        "dplyr",
+        "ellipsis",
+        "glue",
+        "lifecycle",
+        "magrittr",
+        "purrr",
+        "rlang",
+        "tibble",
+        "tidyselect",
+        "vctrs"
+      ]
     },
     "tidyselect": {
       "Package": "tidyselect",
