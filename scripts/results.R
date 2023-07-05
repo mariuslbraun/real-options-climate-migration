@@ -30,7 +30,7 @@ for(i in 1:length(samples)) {
   )
   assign(
     x = df_name,
-    readRDS(
+    value = readRDS(
       paste0(
         "prepared/",
         df_name,
@@ -43,7 +43,7 @@ rm(i, df_name)
 
 
 
-#### Main results ####
+#### 2.1 Main results ####
 
 # formulas for regression models
 baseline_formula_gam = "mig_rate_new ~ s(temp_anom, bs='cr') + s(precip_anom, bs='cr') + period + X...origin + destination"
@@ -91,6 +91,27 @@ for(i in 1:length(samples)) {
       )
     )
     
+    # Chi-squared test comparing GAM and GLM
+    if(model_types[j] == "glm") {
+      compareML(
+        get( # GAM
+          paste(
+            "gam",
+            samples[i],
+            sep = "_"
+          )
+        ),
+        get( # GLM
+          paste(
+            "glm",
+            samples[i],
+            sep = "_"
+          )
+        )
+      )
+    }
+  }
+    
     # save model as RDS file
     saveRDS(
       get(model_name),
@@ -101,97 +122,45 @@ for(i in 1:length(samples)) {
       )
     )
     
-    for(k in 1:length(climate_vars)) {
-      # plot smooths
-      if(model_types == "gam") {
-        plot_name = paste(
-          model_types[j],
-          climate_vars[k],
-          samples[i],
-          sep = "_"
+  for(k in 1:length(climate_vars)) {
+    # plot smooths
+    if(model_types[j] == "gam") {
+      plot_name = paste(
+        model_types[j],
+        climate_vars[k],
+        samples[i],
+        sep = "_"
+      )
+      pdf(
+        paste0(
+          "figures/main_results/",
+          plot_name,
+          ".pdf"
         )
-        plot_smooth(
-          x = get(model_name),
-          view = temp_anom
-        )
-      }
+      )
+      plot_smooth(
+        x = get(model_name),
+        view = climate_vars[k],
+        xlab = ifelse(
+          climate_vars[k] == "temp_anom",
+          "Temperature anomalies",
+          "Precipitation anomalies"
+        ),
+        ylab = "log of bilateral migration rates",
+        h0 = 0,
+        v0 = 0,
+        rm.ranef = T
+      )
+      dev.off()
     }
   }
 }
 toc()
-rm(i, j, df_name, formula_value, model_name)
-# GAM for total sample
-gc()
-tic()
-gam_total = mgcv::gam(baseline_formula_gam, family = Gamma(link="log"),
-                     data = df_total, method = "REML")
-toc()
-summary(gam_total)
-
-# linear model for comparison
-g_total = mgcv::gam(baseline_formula_glm, family = Gamma(link="log"),
-                     data = df_total, method = "REML")
-# Chi square test compared semiparametric and linear models
-compareML(gam_total, g_total)
-
-# plot smooth nonparametric functions of temperature and precipitation anomalies
-plot(gam_total, shade = TRUE, xlab = "Temperature anomalies", ylab = "", cex.lab = 1.4, cex.axis = 1.3)
-# label y-axis
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-plot(gam_total, shade = TRUE, xlab = "Precipitation anomalies", ylab = "", cex.lab = 1.4, cex.axis = 1.3)
-# label y-axis
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-# add axes to plot
-abline(h=0, v=0, lty=2)
-gam.check(gam_total)
-
-# GAM for low-income countries
-gc()
-tic()
-gam_lowinc = mgcv::gam(baseline_formula_gam, family = Gamma(link="log"),
-                     data = df_lowinc, method = "REML")
-toc()
-summary(gam_lowinc)
-
-# linear model for comparison
-g_lowinc = mgcv::gam(baseline_formula_glm, family = Gamma(link="log"),
-                     data = df_lowinc, method = "REML")
-# Chi square test compared semiparametric and linear models
-compareML(gam_lowinc, g_lowinc)
-
-# plot smooth nonparametric functions of temperature and precipitation anomalies
-plot(gam_lowinc, shade = TRUE, xlab = "Temperature anomalies", ylab = "", cex.lab = 1.4, cex.axis = 1.3)
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-plot(gam_lowinc, shade = TRUE, xlab = "Precipitation anomalies", ylab = "", cex.lab = 1.4, cex.axis = 1.3)
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-abline(h=0, v=0, lty=2)
-gam.check(gam_lowinc)
-
-# GAM for middle-income countries
-gc()
-tic()
-gam_midinc = mgcv::gam(baseline_formula_gam, family = Gamma(link="log"),
-                     data = df_midinc, method = "REML")
-toc()
-summary(gam_midinc)
-
-# linear model for comparison
-g_midinc = mgcv::gam(baseline_formula_glm, family = Gamma(link="log"),
-                     data = df_midinc, method = "REML")
-# Chi-squared test to compare semiparametric and linear models
-compareML(gam_midinc, g_midinc)
-
-# plot smooth nonparametric functions of temperature and precipitation anomalies
-plot(gam_midinc, shade = TRUE, xlab = "Temperature anomalies", ylab = "", cex.lab = 1.4, cex.axis = 1.3)
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-plot(gam_midinc, shade = TRUE, xlab = "Precipitation anomalies", ylab = "", cex.lab = 1.4, cex.axis = 1.3)
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-abline(h=0, v=0, lty=2)
-gam.check(gam_midinc)
+rm(i, j, df_name, formula_value, model_name, plot_name)
 
 
 
-#### Additional results 1: interaction terms for contiguity ####
+#### 2.2 Additional results 1: interaction terms for contiguity ####
 
 # formula for regression models
 contig_formula_gam = "mig_rate_new ~ contiguity + s(temp_anom, bs='cr')  + s(temp_anom,by = contiguity, bs='cr') + s(precip_anom, bs='cr')+ s(precip_anom, by = contiguity, bs='cr') + period + X...origin + destination"
@@ -234,7 +203,7 @@ gam.check(gam_midinc_contig)
 
 
 
-#### Additional results 2: interaction terms for OECD destination ####
+#### 2.3 Additional results 2: interaction terms for OECD destination ####
 
 # formula for regression models
 OECD_formula_gam = "mig_rate_new ~ OECD_dest + s(temp_anom, bs='cr') + s(temp_anom, by = OECD_dest, bs='cr') + s(precip_anom, bs='cr') + s(precip_anom, by = OECD_dest, bs='cr') + period + X...origin + destination"
