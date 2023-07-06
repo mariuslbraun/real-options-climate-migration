@@ -110,7 +110,6 @@ for(i in 1:length(samples)) {
         )
       )
     }
-  }
     
     # save model as RDS file
     saveRDS(
@@ -122,36 +121,38 @@ for(i in 1:length(samples)) {
       )
     )
     
-  for(k in 1:length(climate_vars)) {
-    # plot smooths
-    if(model_types[j] == "gam") {
-      plot_name = paste(
-        model_types[j],
-        climate_vars[k],
-        samples[i],
-        sep = "_"
-      )
-      pdf(
-        paste0(
-          "figures/main_results/",
-          plot_name,
-          ".pdf"
+    for(k in 1:length(climate_vars)) {
+      # plot smooths
+      if(model_types[j] == "gam") {
+        plot_name = paste(
+          model_types[j],
+          climate_vars[k],
+          samples[i],
+          sep = "_"
         )
-      )
-      plot_smooth(
-        x = get(model_name),
-        view = climate_vars[k],
-        xlab = ifelse(
-          climate_vars[k] == "temp_anom",
-          "Temperature anomalies",
-          "Precipitation anomalies"
-        ),
-        ylab = "log of bilateral migration rates",
-        h0 = 0,
-        v0 = 0,
-        rm.ranef = T
-      )
-      dev.off()
+
+        pdf(
+          paste0(
+            "figures/main_results/",
+            plot_name,
+            ".pdf"
+          )
+        )
+        plot_smooth(
+          x = get(model_name),
+          view = climate_vars[k],
+          xlab = ifelse(
+            climate_vars[k] == "temp_anom",
+            "Temperature anomalies",
+            "Precipitation anomalies"
+          ),
+          ylab = "log of bilateral migration rates",
+          h0 = 0,
+          v0 = 0,
+          rm.ranef = T
+        )
+        dev.off()
+      }
     }
   }
 }
