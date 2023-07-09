@@ -20,6 +20,9 @@ library(tidymv)
 # clear workspace
 rm(list = ls())
 
+# load functions
+source("scripts/functions.R")
+
 # load data frames
 samples = c("total", "lowinc", "midinc")
 for(i in 1:length(samples)) {
@@ -55,109 +58,47 @@ climate_vars = c("temp_anom", "precip_anom")
 # (and GLMs for comparison)
 tic()
 for(i in 1:length(samples)) {
-  df_name = paste(
-    "df",
-    samples[i],
-    sep = "_"
-  )
   for(j in 1:length(model_types)) {
-    # get regression formula
-    formula_value = as.formula(
-      get(
-        paste(
-          "baseline_formula",
-          model_types[j],
-          sep = "_"
-        )
-      )
-    )
-    
-    # create model name
+    # model name
     model_name = paste(
       model_types[j],
       samples[i],
       sep = "_"
     )
-    
-    # estimate model
-    gc()
+    # estimate GAM
     assign(
       x = model_name,
-      value = mgcv::gam(
-        formula = formula_value,
-        family = Gamma(link="log"),
-        data = get(df_name),
-        method = "REML"
-      )
-    )
-    
-    # Chi-squared test comparing GAM and GLM
-    if(model_types[j] == "glm") {
-      compareML(
-        get( # GAM
+      value = estimate_GAM(
+        sample = samples[i],
+        formulae = get(
           paste(
-            "gam",
-            samples[i],
+            "baseline_formula",
+            model_types[j],
             sep = "_"
           )
         ),
-        get( # GLM
-          paste(
-            "glm",
-            samples[i],
-            sep = "_"
-          )
-        )
-      )
-    }
-    
-    # save model as RDS file
-    saveRDS(
-      get(model_name),
-      paste0(
-        "models/main_results/",
-        model_name,
-        ".rds"
+        model_type = model_types[j]
       )
     )
     
+    # plot smooths
     for(k in 1:length(climate_vars)) {
-      # plot smooths
       if(model_types[j] == "gam") {
-        plot_name = paste(
-          model_types[j],
-          climate_vars[k],
-          samples[i],
-          sep = "_"
+        show_gam(
+          sample = samples[i],
+          model_type = model_types[j],
+          climate_var = climate_vars[k],
+          model = get(model_name)
         )
-
-        pdf(
-          paste0(
-            "figures/main_results/",
-            plot_name,
-            ".pdf"
-          )
-        )
-        plot_smooth(
-          x = get(model_name),
-          view = climate_vars[k],
-          xlab = ifelse(
-            climate_vars[k] == "temp_anom",
-            "Temperature anomalies",
-            "Precipitation anomalies"
-          ),
-          ylab = "log of bilateral migration rates",
-          h0 = 0,
-          v0 = 0,
-          rm.ranef = T
-        )
-        dev.off()
       }
     }
   }
+  
+  # Chi-squared test comparing GAM and GLM
+  compare_GAM_GLM(samples[i])
 }
 toc()
-rm(i, j, df_name, formula_value, model_name, plot_name)
+rm(i, j, model_name)
 
 
 
