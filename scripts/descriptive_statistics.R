@@ -200,11 +200,6 @@ for(i in 1:length(vars)) {
 }
 rm(i)
 
-rm(mig_rate_midinc_contig, mig_rate_lowinc_contig,
-       mig_rate_midinc_noncontig, mig_rate_lowinc_noncontig,
-       mig_rate_midinc_OECD_dest, mig_rate_lowinc_OECD_dest,
-       mig_rate_midinc_nonOECD_dest, mig_rate_lowinc_nonOECD_dest)
-
 
 
 #### 1.3 Density plots of temperature and precipitation anomalies ####

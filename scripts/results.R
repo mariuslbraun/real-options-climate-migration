@@ -98,7 +98,7 @@ for(i in 1:length(samples)) {
   compare_GAM_GLM(samples[i])
 }
 toc()
-rm(i, j, model_name)
+rm(i, j, k, model_name)
 
 
 
