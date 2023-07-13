@@ -120,11 +120,11 @@ show_gam = function(sample, climate_var, model, by) {
       sep = "_"
     )
     
-    pdf(
+    png(
       paste0(
         "figures/main_results/",
         plot_name,
-        ".pdf"
+        ".png"
       )
     )
     
@@ -152,13 +152,13 @@ show_gam = function(sample, climate_var, model, by) {
       sep = "_"
     )
     
-    pdf(
+    png(
       paste0(
         "figures/",
         by,
         "/",
         plot_name,
-        ".pdf"
+        ".png"
       )
     )
     
