@@ -102,6 +102,9 @@ estimate_GAM = function(sample, formulae, model_type, by) {
       )
     )
     
+    # diagnostic checks for GAM
+    gam.check(model)
+    
     # return model
     return(model)
   }
