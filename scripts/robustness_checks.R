@@ -38,10 +38,11 @@ rm(i)
 
 
 
-#### Robustness check 1: vary thresholds for low-income countries ####
+#### 3.1: vary thresholds for low-income countries ####
 
 # formula for regression models
 baseline_formula_gam = "mig_rate_new ~ s(temp_anom, bs='cr') + s(precip_anom, bs='cr') + period + X...origin + destination"
+climate_vars = c("temp_anom", "precip_anom")
 
 # lower threshold: bottom 20 % of GDP per capita distribution defined as low-income countries
 df_lowinc0.2 = df_total[which(df_total$low_income0.2 == 1), ]
@@ -127,94 +128,46 @@ rm(df_lowinc0.2, df_midinc0.2, df_lowinc0.3, df_midinc0.3)
 
 
 
-#### Robustness check 2: smoothing parameter selection using GCV instead of REML ####
+#### 3.2: smoothing parameter selection using GCV instead of REML ####
 
-# GAM for low-income countries
-gc()
+# estimate GAMs for low-income and middle-income sample
 tic()
-gam_lowinc_gcv = mgcv::gam(baseline_formula_gam, family = Gamma(link = "log"),
-                            data = df_lowinc, method = "GCV.Cp")
+for(i in 2:length(samples)) {
+  # model name
+  model_name = paste(
+    "gam",
+    samples[i],
+    "gcv",
+    sep = "_"
+  )
+  
+  # estimate GAM
+  assign(
+    x = model_name,
+    value = estimate_GAM(
+      sample = samples[i],
+      formulae = baseline_formula_gam,
+      smoothing_method = "GCV.Cp",
+      directory = "gcv"
+    )
+  )
+  
+  # plot smooths
+  for(k in 1:length(climate_vars)) {
+    plot = show_gam(
+      sample = samples[i],
+      climate_var = climate_vars[k],
+      model = get(model_name),
+      directory = "gcv"
+    )
+  }
+}
 toc()
-summary(gam_lowinc_gcv)
-
-# plot smooth nonparametric functions of temperature and precipitation anomalies
-plot(gam_lowinc_gcv, shade = TRUE, xlab = "Temperature anomalies", ylab = "", cex.lab = 1.4,
-       cex.axis = 1.3)
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-plot(gam_lowinc_gcv, shade = TRUE, xlab = "Precipitation anomalies", ylab = "", cex.lab = 1.4,
-       cex.axis = 1.3)
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-abline(h=0, v=0, lty=2)
-gam.check(gam_lowinc_gcv)
-
-# GAM for middle-income countries
-gc()
-tic()
-gam_midinc_gcv = mgcv::gam(baseline_formula_gam, family = Gamma(link = "log"),
-                            data = df_midinc, method = "GCV.Cp")
-toc()
-summary(gam_midinc_gcv)
-
-# plot smooth nonparametric functions of temperature and precipitation anomalies
-plot(gam_midinc_gcv, shade = TRUE, xlab = "Temperature anomalies", ylab = "", cex.lab = 1.4,
-       cex.axis = 1.3)
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-plot(gam_midinc_gcv, shade = TRUE, xlab = "Precipitation anomalies", ylab = "", cex.lab = 1.4,
-       cex.axis = 1.3)
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-abline(h=0, v=0, lty=2)
-gam.check(gam_midinc_gcv)
+rm(i, k, model_name, plot)
 
 
 
-#### Robustness check 3: estimate GAMs for agriculturally dependent and not agriculturally dependent ####
-
-# only including low-income countries
-df_agri = df_total[which(df_total$preval_agri == 1), ]
-# only including middle-income countries
-df_nonagri = df_total[which(df_total$preval_agri == 0), ]
-
-# GAM for agriculturally dependent countries
-gc()
-tic()
-gam_agri = mgcv::gam(baseline_formula_gam, family = Gamma(link="log"),
-                            data = df_agri, method = "REML")
-toc()
-summary(gam_agri)
-
-# plot smooth nonparametric functions of temperature and precipitation anomalies
-plot(gam_agri, shade = TRUE, xlab = "Temperature anomalies", ylab = "", cex.lab = 1.4,
-       cex.axis = 1.3)
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-plot(gam_agri, shade = TRUE, xlab = "Precipitation anomalies", ylab = "", cex.lab = 1.4,
-       cex.axis = 1.3)
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-abline(h=0, v=0, lty=2)
-gam.check(gam_agri)
-
-# GAM for not agriculturally dependent countries
-gc()
-tic()
-gam_nonagri = mgcv::gam(baseline_formula_gam, family = Gamma(link="log"),
-                            data = df_nonagri, method = "REML")
-toc()
-summary(gam_nonagri)
-
-# plot smooth nonparametric functions of temperature and precipitation anomalies
-plot(gam_nonagri, shade = TRUE, xlab = "Temperature anomalies", ylab = "", cex.lab = 1.4,
-       cex.axis = 1.3)
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-plot(gam_nonagri, shade = TRUE, xlab = "Precipitation anomalies", ylab = "", cex.lab = 1.4,
-       cex.axis = 1.3)
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-abline(h=0, v=0, lty=2)
-gam.check(gam_nonagri)
-
-rm(df_agri, df_nonagri)
-
-
-
-#### Robustness check 4: include economic control variables ####
+#### 3.3: include economic control variables ####
 
 # formula for regression models
 controls_formula_gam = "mig_rate_new ~ s(temp_anom, bs='cr') + s(precip_anom, bs='cr') + log_gdp_pc_ratio_origin_dest + common_lang + log_dist + civil_war + period + X...origin + destination"
@@ -270,8 +223,9 @@ gam.check(gam_midinc_controls)
 
 
 
-#### Robustness check 5: estimate GAM using heat and drought month shares ####
+#### 3.4: estimate GAM using heat and drought month shares ####
 
+# formula for regression models 
 shares_formula_gam = "mig_rate_new ~ s(share_temp_greater_1SD, bs='cr') + s(share_precip_less_1SD, bs='cr') + period + X...origin + destination"
 climate_shares = c("share_temp_greater_1SD", "share_precip_less_1SD")
 # estimate GAMs for low-income and middle-income sample
@@ -309,49 +263,8 @@ toc()
 rm(i, k, model_name, plot, shares_formula_gam, climate_shares)
 
 
-# formula for regression models
 
-
-# GAM for low-income countries
-gc()
-tic()
-gam_lowinc_1sd = mgcv::gam(shares_formula_gam, family = Gamma(link="log"),
-                            data = df_lowinc, method = "REML")
-toc()
-summary(gam_lowinc_1sd)
-
-# plot smooth nonparametric functions of heat and drought month shares
-plot(gam_lowinc_1sd, shade = TRUE, xlab = "Heat month share", ylab = "", cex.lab = 1.4,
-       cex.axis = 1.3)
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-plot(gam_lowinc_1sd, shade = TRUE, xlab = "Drought month share", ylab = "", cex.lab = 1.4,
-       cex.axis = 1.3)
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-abline(h=0, v=0, lty=2)
-gam.check(gam_lowinc_1sd)
-
-# GAM for middle-income countries
-gc()
-tic()
-gam_midinc_1sd = mgcv::gam(shares_formula_gam, family = Gamma(link="log"),
-                            data = df_midinc, method = "REML")
-toc()
-summary(gam_midinc_1sd)
-
-# plot smooth nonparametric functions of heat and drought month shares
-plot(gam_midinc_1sd, shade = TRUE, xlab = "Heat month share", ylab = "", cex.lab = 1.4,
-       cex.axis = 1.3)
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-plot(gam_midinc_1sd, shade = TRUE, xlab = "Drought month share", ylab = "", cex.lab = 1.4,
-       cex.axis = 1.3)
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-abline(h=0, v=0, lty=2)
-gam.check(gam_midinc_1sd)
-
-
-
-# second round of revisions
-#### Robustness check 6: interaction between climatic anomalies and share of agricultural productivity ####
+#### 3.5: interaction between climatic anomalies and share of agricultural productivity ####
 
 # create indicator of quartile in the distribution of share of agricultural GDP
 df_total$agri_share_gdp_quantile = NA
@@ -459,7 +372,7 @@ rm(df_agri1, df_agri2, df_agri3, df_agri4)
 
 
 
-#### Robustness check 7: exclude observations with extreme temperature and precipitation anomalies ####
+#### 3.6: exclude observations with extreme temperature and precipitation anomalies ####
 # low-income countries
 df_lowinc_no_2sd = df_lowinc %>%
                         filter(!(temp_anom > (mean(temp_anom) + 2 * sd(temp_anom)) |

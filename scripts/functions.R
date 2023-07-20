@@ -24,18 +24,25 @@ get_df =  function(sample){
         ),
         ".rds"
       )
-    ) %>% sample_n(500)
+    )
   return(df)
 }
 
 # estimate and save GAM
-estimate_GAM = function(sample, formulae, model_type, by, directory) {
+estimate_GAM = function(sample, formulae, model_type, by, directory, smoothing_method) {
   # create data frame name
   df_name = paste(
     "df",
     sample,
     sep = "_"
   )
+  
+  # handle smoothing method argument
+  if(missing(smoothing_method)) {
+    smooth_method = "REML"
+  } else {
+    smooth_method = paste0(smoothing_method, "")
+  }
   
   # check whether directory is given and whether it already exists
   if(missing(directory)) {
@@ -87,7 +94,7 @@ estimate_GAM = function(sample, formulae, model_type, by, directory) {
     formula = formulae,
     family = Gamma(link="log"),
     data = get(df_name),
-    method = "REML"
+    method = smooth_method
   )
   
   # save model as RDS file
