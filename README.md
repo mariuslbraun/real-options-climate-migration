@@ -34,7 +34,7 @@ In addition, t-tests comparing low- and middle-income sample means for the main 
 
 ## 3. Main Results
 
-[results.R](scripts/results.R) produces the main results of the paper. Generalized additive models (GAMs) with Gamma distribution and log-link function are employed to estimate nonlinear relationships between climatic anomalies and international migration for the total sample as well as for low- and middle-income countries. In a GAM, the explanatory variables are specified in terms of smooth nonparametric functions, thus requiring no restrictive a priori assumptions about any parametric functional form (Ferrini and Fezzi 2012). Instead, the degree of nonlinearity is determined directly from the data using an automated smoothing selection criterion. For comparison, generalized linear models with climate variables entering the estimation linearly are also estimated. In addition, GAMs are estimated with interaction terms for migration to contiguous destination countries as well as to OECD destination countries.
+[results.R](scripts/results.R) produces the main results of the paper. Generalized additive models (GAMs) with Gamma distribution and log-link function are employed to estimate nonlinear relationships between climatic anomalies and international migration for the total sample as well as for low- and middle-income countries. In a GAM, the explanatory variables are specified in terms of smooth nonparametric functions, thus requiring no restrictive a priori assumptions about any parametric functional form (for more details see Wood 2017). Instead, the degree of nonlinearity is determined directly from the data using an automated smoothing selection criterion. For comparison, generalized linear models with climate variables entering the estimation linearly are also estimated. In addition, GAMs are estimated with interaction terms for migration to contiguous destination countries as well as to OECD destination countries.
 
 The general workflow is the same for all of the regression models:
 
@@ -51,10 +51,10 @@ The general workflow is the same for all of the regression models:
 
 The resulting plots should resemble the following figures:
 
-|    |    |    |
+|Total sample|Low-income|Middle-income|
 |----|----|----|
-|    |    |    |
-|    |    |    |
+|![gam_temp_anom_total](figures/main_results/gam_temp_anom_total.png)|![gam_temp_anom_lowinc](figures/main_results/gam_temp_anom_lowinc.png)|![gam_temp_anom_midinc](figures/main_results/gam_temp_anom_midinc.png)|
+|![gam_precip_anom_total](figures/main_results/gam_precip_anom_total.png)|![gam_precip_anom_lowinc](figures/main_results/gam_precip_anom_lowinc.png)|![gam_precip_anom_midinc](figures/main_results/gam_precip_anom_midinc.png)|
 
 Proceed analogously for all other models.
 
@@ -75,5 +75,6 @@ The general workflow for the models is identical to the one outlined for the mai
 
 Braun, M. (2023), A real-options analysis of climate change and international migration, *Environment and Development Economics*, 1-20. https://doi.org/10.1017/S1355770X23000013
 
-Wood, S.N. (2001), mgcv: GAMs and Generalized Ridge Regression for R, *R News* 1, 20-25.
+Wood, S.N. (2001), mgcv: GAMs and generalized ridge regression for R, *R News* 1, 20-25.
 
+Wood, S.N. (2017), *Generalized Additive Models: An Introduction with R*. CRC press, Boca Raton, FL.
