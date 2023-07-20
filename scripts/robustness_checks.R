@@ -15,20 +15,26 @@ library(ggplot2)
 library(tictoc)
 library(itsadug)
 library(moments)
-library(tidymv)
 
 # clear workspace
 rm(list = ls())
 
-# load dataset (non-OECD countries only)
-df_total = read.csv("prepared\\Dataset_final.csv")
-df_total$mig_rate_new = df_total$mig_rate * 100
+# load functions
+source("scripts/functions.R")
 
-# create separate datasets for low- and middle-income countries
-# low-income countries
-df_lowinc = df_total[which(df_total$low_income == 1), ]
-# middle-income countries
-df_midinc = df_total[which(df_total$low_income == 0), ]
+# load data frames
+samples = c("total", "lowinc", "midinc")
+for(i in 1:length(samples)) {
+  assign(
+    x = paste(
+      "df",
+      samples[i],
+      sep = "_"
+    ),
+    value = get_df(samples[i])
+  )
+}
+rm(i)
 
 
 
@@ -266,8 +272,45 @@ gam.check(gam_midinc_controls)
 
 #### Robustness check 5: estimate GAM using heat and drought month shares ####
 
-# formula for regression models
 shares_formula_gam = "mig_rate_new ~ s(share_temp_greater_1SD, bs='cr') + s(share_precip_less_1SD, bs='cr') + period + X...origin + destination"
+climate_shares = c("share_temp_greater_1SD", "share_precip_less_1SD")
+# estimate GAMs for low-income and middle-income sample
+tic()
+for(i in 2:length(samples)) {
+    # model name
+    model_name = paste(
+      "gam",
+      samples[i],
+      "shares",
+      sep = "_"
+    )
+    
+    # estimate GAM
+    assign(
+      x = model_name,
+      value = estimate_GAM(
+        sample = samples[i],
+        formulae = shares_formula_gam,
+        directory = "shares"
+      )
+    )
+    
+    # plot smooths
+    for(k in 1:length(climate_shares)) {
+      plot = show_gam(
+        sample = samples[i],
+        climate_var = climate_shares[k],
+        model = get(model_name),
+        directory = "shares"
+      )
+    }
+}
+toc()
+rm(i, k, model_name, plot, shares_formula_gam, climate_shares)
+
+
+# formula for regression models
+
 
 # GAM for low-income countries
 gc()

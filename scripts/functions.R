@@ -8,7 +8,6 @@ library(ggplot2)
 library(tictoc)
 library(itsadug)
 library(moments)
-library(tidymv)
 
 # clear workspace
 rm(list = ls())
@@ -25,12 +24,12 @@ get_df =  function(sample){
         ),
         ".rds"
       )
-    )
+    ) %>% sample_n(500)
   return(df)
 }
 
 # estimate and save GAM
-estimate_GAM = function(sample, formulae, model_type, by) {
+estimate_GAM = function(sample, formulae, model_type, by, directory) {
   # create data frame name
   df_name = paste(
     "df",
@@ -38,10 +37,19 @@ estimate_GAM = function(sample, formulae, model_type, by) {
     sep = "_"
   )
   
+  # check whether directory is given and whether it already exists
+  if(missing(directory)) {
+    subdir = file.path("models", "main_results")
+  } else {
+    subdir = file.path("models", directory)
+  }
+  dir.create(subdir, showWarnings = F)
+  
   # get regression formula
   formulae = as.formula(formulae)
   
-  if(missing(by)) {
+  # create model name
+  if(missing(by)) { # no interaction term provided
     # create model name
     model_name = paste(
       ifelse(
@@ -52,7 +60,13 @@ estimate_GAM = function(sample, formulae, model_type, by) {
       sample,
       sep = "_"
     )
-  } else {
+    if(missing(directory)) {
+      model_name = paste0(model_name, "")
+    } else {
+      model_name = paste(model_name, directory, sep = "_")
+    }
+  } else { # interaction term provided
+    
     # create model name
     model_name = paste(
       ifelse(
@@ -76,30 +90,25 @@ estimate_GAM = function(sample, formulae, model_type, by) {
     method = "REML"
   )
   
-  if(missing(by)){
-    # save model as RDS file
+  # save model as RDS file
+  if(missing(by)){ # no interaction term provided
     saveRDS(
       model,
-      paste0(
-        "models/main_results/",
-        model_name,
-        ".rds"
-      )
+      file.path(subdir, paste0(model_name, ".rds"))
     )
+    
+    # diagnostic checks for GAM
+    gam.check(model)
     
     # return model
     return(model)
-  } else {
-    # save model as RDS file
+  } else { # interaction term provided
+    subdir = file.path("models", by)
+    dir.create(subdir, showWarnings = F)
+    
     saveRDS(
       model,
-      paste0(
-        "models/",
-        by,
-        "/",
-        model_name,
-        ".rds"
-      )
+      file.path(subdir, paste0(model_name, ".rds"))
     )
     
     # diagnostic checks for GAM
@@ -111,7 +120,16 @@ estimate_GAM = function(sample, formulae, model_type, by) {
 }
 
 # plot smooth and save as PDF
-show_gam = function(sample, climate_var, model, by) {
+show_gam = function(sample, climate_var, model, by, directory) {
+  # check whether directory is given and whether it already exists
+  if(missing(directory)) {
+    subdir = file.path("figures", "main_results")
+  } else {
+    subdir = file.path("figures", directory)
+  }
+  dir.create(subdir, showWarnings = F)
+  
+  # no interaction term provided
   if(missing(by)) {
     plot_name = paste(
       "gam",
@@ -120,13 +138,15 @@ show_gam = function(sample, climate_var, model, by) {
       sep = "_"
     )
     
-    png(
-      paste0(
-        "figures/main_results/",
-        plot_name,
-        ".png"
+    if(missing(directory)) {
+      plot_name = paste0(plot_name, "")
+    } else {
+      plot_name = paste(plot_name, directory, sep = "_")
+    }
+    
+    pdf(
+      file.path(subdir, paste0(plot_name, ".pdf"))
       )
-    )
     
     plot_smooth(
       x = model,
@@ -143,7 +163,7 @@ show_gam = function(sample, climate_var, model, by) {
     )
     
     dev.off()
-  } else {
+  } else { # interaction term provided
     plot_name = paste(
       "gam",
       climate_var,
@@ -152,14 +172,11 @@ show_gam = function(sample, climate_var, model, by) {
       sep = "_"
     )
     
-    png(
-      paste0(
-        "figures/",
-        by,
-        "/",
-        plot_name,
-        ".png"
-      )
+    subdir = file.path("figures", by)
+    dir.create(subdir, showWarnings = F)
+    
+    pdf(
+      file.path(subdir, paste0(plot_name, ".pdf"))
     )
     
     plot_smooth(

@@ -15,7 +15,6 @@ library(ggplot2)
 library(tictoc)
 library(itsadug)
 library(moments)
-library(tidymv)
 
 # clear workspace
 rm(list = ls())
