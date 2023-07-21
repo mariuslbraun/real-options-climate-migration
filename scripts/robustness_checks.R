@@ -168,58 +168,49 @@ rm(i, k, model_name, plot)
 
 
 #### 3.3: include economic control variables ####
-
 # formula for regression models
-controls_formula_gam = "mig_rate_new ~ s(temp_anom, bs='cr') + s(precip_anom, bs='cr') + log_gdp_pc_ratio_origin_dest + common_lang + log_dist + civil_war + period + X...origin + destination"
-
-# log GDP per capita ratio total sample
-df_total$log_gdp_pc_ratio_origin_dest = log(df_total$gdp_pc_ratio_dest_origin)
-# log distance total sample
-df_total$log_dist = log(df_total$dist)
-# log GDP per capita ratio low-income countries
-df_lowinc$log_gdp_pc_ratio_origin_dest = log(df_lowinc$gdp_pc_ratio_dest_origin)
-# log distance low-income countries
-df_lowinc$log_dist = log(df_lowinc$dist)
-# log GDP per capita ratio middle-income countries
-df_midinc$log_gdp_pc_ratio_origin_dest = log(df_midinc$gdp_pc_ratio_dest_origin)
-# log distance middle-income countries
-df_midinc$log_dist = log(df_midinc$dist)
-
-# GAM for low-income countries
-gc()
+controls = "log_gdp_pc_ratio_dest_origin + common_lang + log_dist + civil_war"
+controls_formula_gam = paste(baseline_formula_gam, controls, sep = " + ")
 tic()
-gam_lowinc_controls = mgcv::gam(controls_formula_gam, family = Gamma(link="log"),
-                                   data = df_lowinc, method = "REML")
+for(i in 2:length(samples)) {
+  # create log GDP per capita and log distance variables
+  df_name = paste("df", samples[i], sep = "_")
+  log_gdp_pc_ratio_dest_origin = log(get(df_name)["gdp_pc_ratio_dest_origin"][, ])
+  log_dist = log(get(df_name)["dist"][, ])
+  df_value = cbind(
+    get(df_name),
+    log_gdp_pc_ratio_dest_origin,
+    log_dist
+  )
+  
+  # model name
+  model_name = paste(
+    "gam", samples[i], "controls", sep = "_"
+  )
+  
+  # estimate GAM
+  assign(
+    x = model_name,
+    value = estimate_GAM(
+      sample = samples[i],
+      formulae = controls_formula_gam,
+      directory = "controls"
+    )
+  )
+  
+  # plot smooths
+  for(k in 1:length(climate_vars)) {
+    plot = show_gam(
+      sample = samples[i],
+      climate_var = climate_vars[k],
+      model = get(model_name),
+      directory = "controls"
+    )
+  }
+}
 toc()
-summary(gam_lowinc_controls)
-
-# plot smooth nonparametric functions of temperature and precipitation anomalies
-plot(gam_lowinc_controls, shade = TRUE, xlab = "Temperature anomalies", ylab = "", cex.lab = 1.4,
-       cex.axis = 1.3)
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-plot(gam_lowinc_controls, shade = TRUE, xlab = "Precipitation anomalies", ylab = "", cex.lab = 1.4,
-       cex.axis = 1.3)
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-abline(h=0, v=0, lty=2)
-gam.check(gam_lowinc_controls)
-
-# GAM for middle-income countries
-gc()
-tic()
-gam_midinc_controls = mgcv::gam(controls_formula_gam, family = Gamma(link="log"),
-                                   data = df_midinc, method = "REML")
-toc()
-summary(gam_midinc_controls)
-
-# plot smooth nonparametric functions of temperature and precipitation anomalies
-plot(gam_midinc_controls, shade = TRUE, xlab = "Temperature anomalies", ylab = "", cex.lab = 1.4,
-       cex.axis = 1.3)
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-plot(gam_midinc_controls, shade = TRUE, xlab = "Precipitation anomalies", ylab = "", cex.lab = 1.4,
-       cex.axis = 1.3)
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-abline(h=0, v=0, lty=2)
-gam.check(gam_midinc_controls)
+rm(i, k, model_name, plot, controls_formula_gam,
+   controls, df_value, df_name)
 
 
 
