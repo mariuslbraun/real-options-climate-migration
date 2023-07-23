@@ -12,7 +12,7 @@ library(moments)
 # clear workspace
 rm(list = ls())
 
-# load data frames
+#### load data frames ####
 get_df =  function(sample){
   df = readRDS(
       paste0(
@@ -28,7 +28,7 @@ get_df =  function(sample){
   return(df)
 }
 
-# estimate and save GAM
+#### estimate and save GAM ####
 estimate_GAM = function(sample, formulae, model_type, by, directory, smoothing_method) {
   # create data frame name
   df_name = paste(
@@ -126,7 +126,7 @@ estimate_GAM = function(sample, formulae, model_type, by, directory, smoothing_m
   }
 }
 
-# plot smooth and save as PDF
+#### plot smooth and save as PDF ####
 show_gam = function(sample, climate_var, model, by, directory) {
   # check whether directory is given and whether it already exists
   if(missing(directory)) {
@@ -205,6 +205,7 @@ show_gam = function(sample, climate_var, model, by, directory) {
   }
 }
 
+#### Chi-squared test comparing GAM and GLM ####
 compare_GAM_GLM = function(sample) {
   compareML(
     get( # GAM

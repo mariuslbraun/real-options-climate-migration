@@ -36,95 +36,54 @@ for(i in 1:length(samples)) {
 }
 rm(i)
 
+# formula for regression models
+baseline_formula_gam = "mig_rate_new ~ s(temp_anom, bs='cr') + s(precip_anom, bs='cr') + period + X...origin + destination"
+# vector of climate variable names
+climate_vars = c("temp_anom", "precip_anom")
+
 
 
 #### 3.1: vary thresholds for low-income countries ####
-
-# formula for regression models
-baseline_formula_gam = "mig_rate_new ~ s(temp_anom, bs='cr') + s(precip_anom, bs='cr') + period + X...origin + destination"
-climate_vars = c("temp_anom", "precip_anom")
-
-# lower threshold: bottom 20 % of GDP per capita distribution defined as low-income countries
-df_lowinc0.2 = df_total[which(df_total$low_income0.2 == 1), ]
-df_midinc0.2 = df_total[which(df_total$low_income0.2 == 0), ]
-
-# GAM for low-income countries
-gc()
-tic()
-gam_lowinc0.2 = mgcv::gam(baseline_formula_gam, family = Gamma(link = "log"),
-                            data = df_lowinc0.2, method = "REML")
-toc()
-summary(gam_lowinc0.2)
-
-# plot smooth nonparametric functions of temperature and precipitation anomalies
-plot(gam_lowinc0.2, shade = TRUE, xlab = "Temperature anomalies", ylab = "", cex.lab = 1.4,
-       cex.axis = 1.3)
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-plot(gam_lowinc0.2, shade = TRUE, xlab = "Precipitation anomalies", ylab = "", cex.lab = 1.4,
-       cex.axis = 1.3)
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-abline(h=0, v=0, lty=2)
-gam.check(gam_lowinc0.2)
-
-# GAM for middle-income countries
-gc()
-tic()
-gam_midinc0.2 = mgcv::gam(baseline_formula_gam, family = Gamma(link = "log"),
-                            data = df_midinc0.2, method = "REML")
-toc()
-summary(gam_midinc0.2)
-
-# plot smooth nonparametric functions of temperature and precipitation anomalies
-plot(gam_midinc0.2, shade = TRUE, xlab = "Temperature anomalies", ylab = "", cex.lab = 1.4,
-       cex.axis = 1.3)
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-plot(gam_midinc0.2, shade = TRUE, xlab = "Precipitation anomalies", ylab = "", cex.lab = 1.4,
-       cex.axis = 1.3)
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-abline(h=0, v=0, lty=2)
-gam.check(gam_midinc0.2)
-
-# higher threshold: bottom 30 % of GDP per capita distribution defined as low-income countries
-df_lowinc0.3 = df_total[which(df_total$low_income0.3 == 1), ]
-df_midinc0.3 = df_total[which(df_total$low_income0.3 == 0), ]
-
-# GAM for low-income countries
-gc()
-tic()
-gam_lowinc0.3 = mgcv::gam(baseline_formula_gam, family = Gamma(link = "log"),
-                            data = df_lowinc0.3, method = "REML")
-toc()
-summary(gam_lowinc0.3)
-
-# plot smooth nonparametric functions of temperature and precipitation anomalies
-plot(gam_lowinc0.3, shade = TRUE, xlab = "Temperature anomalies", ylab = "", cex.lab = 1.4,
-       cex.axis = 1.3)
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-plot(gam_lowinc0.3, shade = TRUE, xlab = "Precipitation anomalies", ylab = "", cex.lab = 1.4,
-       cex.axis = 1.3)
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-abline(h=0, v=0, lty=2)
-gam.check(gam_lowinc0.3)
-
-# GAM for middle-income countries
-gc()
-tic()
-gam_midinc0.3 = mgcv::gam(baseline_formula_gam, family = Gamma(link = "log"),
-                            data = df_midinc0.3, method = "REML")
-toc()
-summary(gam_midinc0.3)
-
-# plot smooth nonparametric functions of temperature and precipitation anomalies
-plot(gam_midinc0.3, shade = TRUE, xlab = "Temperature anomalies", ylab = "", cex.lab = 1.4,
-       cex.axis = 1.3)
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-plot(gam_midinc0.3, shade = TRUE, xlab = "Precipitation anomalies", ylab = "", cex.lab = 1.4,
-       cex.axis = 1.3)
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-abline(h=0, v=0, lty=2)
-gam.check(gam_midinc0.3)
-
-rm(df_lowinc0.2, df_midinc0.2, df_lowinc0.3, df_midinc0.3)
+thresholds = c("0.2", "0.3")
+for(i in 2:length(samples)) {
+  for(j in 1:length(thresholds)) {
+    # create low- and middle-income samples with alternative thresholds
+    sample_name = paste0(samples[i], thresholds[j])
+    lowinc_dummy_name = paste0("low_income", thresholds[j])
+    assign(
+      x = paste("df", sample_name, sep = "_"),
+      value = df_total[
+        which(
+          df_total[lowinc_dummy_name][, ] == as.numeric(samples[i] == "lowinc")
+          ), 
+        ]
+    )
+    
+    # model name
+    model_name = paste("gam", sample_name, sep = "_")
+    
+    # estimate GAM
+    assign(
+      x = model_name,
+      value = estimate_GAM(
+        sample = sample_name,
+        formulae = baseline_formula_gam,
+        directory = paste0("lowinc", thresholds[j])
+      )
+    )
+    
+    # plot smooths
+    for(k in 1:length(climate_vars)) {
+      plot = show_gam(
+        sample = sample_name,
+        climate_var = climate_vars[k],
+        model = get(model_name),
+        directory = paste0("lowinc", thresholds[j])
+      )
+    }
+  }
+}
+rm(i, j, k, sample_name, lowinc_dummy_name, model_name, plot)
 
 
 
@@ -134,12 +93,7 @@ rm(df_lowinc0.2, df_midinc0.2, df_lowinc0.3, df_midinc0.3)
 tic()
 for(i in 2:length(samples)) {
   # model name
-  model_name = paste(
-    "gam",
-    samples[i],
-    "gcv",
-    sep = "_"
-  )
+  model_name = paste("gam", samples[i], "gcv", sep = "_")
   
   # estimate GAM
   assign(
@@ -223,12 +177,7 @@ climate_shares = c("share_temp_greater_1SD", "share_precip_less_1SD")
 tic()
 for(i in 2:length(samples)) {
     # model name
-    model_name = paste(
-      "gam",
-      samples[i],
-      "shares",
-      sep = "_"
-    )
+    model_name = paste("gam", samples[i], "shares", sep = "_")
     
     # estimate GAM
     assign(
