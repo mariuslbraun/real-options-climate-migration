@@ -81,6 +81,8 @@ for(i in 2:length(samples)) {
         directory = paste0("lowinc", thresholds[j])
       )
     }
+    
+    rm(list = paste("df", sample_name, sep = "_"))
   }
 }
 rm(i, j, k, sample_name, lowinc_dummy_name, model_name, plot)
@@ -313,50 +315,42 @@ rm(df_agri1, df_agri2, df_agri3, df_agri4)
 
 
 #### 3.6: exclude observations with extreme temperature and precipitation anomalies ####
-# low-income countries
-df_lowinc_no_2sd = df_lowinc %>%
-                        filter(!(temp_anom > (mean(temp_anom) + 2 * sd(temp_anom)) |
-                               precip_anom < (mean(precip_anom) - 2 * sd(precip_anom))
-                               ))
-
-# GAM for low-income countries excluding outliers
-gc()
-tic()
-gam_lowinc_no_2sd = mgcv::gam(baseline_formula_gam, family = Gamma(link="log"),
-                                   data = df_lowinc_no_2sd, method = "REML")
-toc()
-summary(gam_lowinc_no_2sd)
-
-# plot smooth nonparametric functions of temperature and precipitation anomalies
-plot(gam_lowinc_no_2sd, shade = TRUE, xlab = "Temperature anomalies", ylab = "", cex.lab = 1.4,
-     cex.axis = 1.3)
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-plot(gam_lowinc_no_2sd, shade = TRUE, xlab = "Precipitation anomalies", ylab = "", cex.lab = 1.4,
-     cex.axis = 1.3)
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-abline(h=0, v=0, lty=2)
-gam.check(gam_lowinc_no_2sd)
-
-# middle-income countries
-df_midinc_no_2sd = df_midinc %>%
-                        filter(!(temp_anom > (mean(temp_anom) + 2 * sd(temp_anom)) |
-                               precip_anom < (mean(precip_anom) - 2 * sd(precip_anom))
-                               ))
-
-# GAM for middle-income countries excluding outliers
-gc()
-tic()
-gam_midinc_no_2sd = mgcv::gam(baseline_formula_gam, family = Gamma(link="log"),
-                                   data = df_midinc_no_2sd, method = "REML")
-toc()
-summary(gam_midinc_no_2sd)
-
-# plot smooth nonparametric functions of temperature and precipitation anomalies
-plot(gam_midinc_no_2sd, shade = TRUE, xlab = "Temperature anomalies", ylab = "", cex.lab = 1.4,
-     cex.axis = 1.3)
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-plot(gam_midinc_no_2sd, shade = TRUE, xlab = "Precipitation anomalies", ylab = "", cex.lab = 1.4,
-     cex.axis = 1.3)
-title(ylab = "log of bilateral migration rates", mgp=c(2.5,1,0), cex.lab = 1.4)
-abline(h=0, v=0, lty=2)
-gam.check(gam_midinc_no_2sd)
+for(i in 2:length(samples)) {
+    # create low- and middle-income samples without extreme temperature and precipitation anomalies
+    sample_name = paste(samples[i], "no_2sd", sep = "_")
+    df_name = paste("df", samples[i], sep = "_")
+    assign(
+      x = paste("df", sample_name, sep = "_"),
+      value = get(df_name) %>% filter(
+        !(
+          temp_anom > (mean(temp_anom) + 2 * sd(temp_anom)) |
+          precip_anom < (mean(precip_anom) - 2 * sd(precip_anom))
+        )
+      )
+    )
+    
+    # model name
+    model_name = paste("gam", sample_name, sep = "_")
+    
+    # estimate GAM
+    assign(
+      x = model_name,
+      value = estimate_GAM(
+        sample = sample_name,
+        formulae = baseline_formula_gam,
+        directory = "no_2sd"
+      )
+    )
+    
+    # plot smooths
+    for(k in 1:length(climate_vars)) {
+      plot = show_gam(
+        sample = sample_name,
+        climate_var = climate_vars[k],
+        model = get(model_name),
+        directory = "no_2sd"
+      )
+    }
+    rm(list = paste("df", sample_name, sep = "_"))
+}
+rm(i, k, sample_name, model_name, plot)

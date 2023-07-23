@@ -67,7 +67,7 @@ estimate_GAM = function(sample, formulae, model_type, by, directory, smoothing_m
       sample,
       sep = "_"
     )
-    if(missing(directory)) {
+    if(missing(directory) | directory == "lowinc0.2" | directory == "lowinc0.3" | directory == "no_2sd") {
       model_name = paste0(model_name, "")
     } else {
       model_name = paste(model_name, directory, sep = "_")
@@ -145,7 +145,7 @@ show_gam = function(sample, climate_var, model, by, directory) {
       sep = "_"
     )
     
-    if(missing(directory)) {
+    if(missing(directory) | directory == "lowinc0.2" | directory == "lowinc0.3" | directory == "no_2sd") {
       plot_name = paste0(plot_name, "")
     } else {
       plot_name = paste(plot_name, directory, sep = "_")
