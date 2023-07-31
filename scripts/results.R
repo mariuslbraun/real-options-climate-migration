@@ -46,7 +46,6 @@ model_types = c("gam", "glm")
 climate_vars = c("temp_anom", "precip_anom")
 # estimate GAMs for total, low-income and middle-income sample
 # (and GLMs for comparison)
-tic()
 for(i in 1:length(samples)) {
   for(j in 1:length(model_types)) {
     # model name
@@ -58,7 +57,7 @@ for(i in 1:length(samples)) {
     # estimate GAM
     assign(
       x = model_name,
-      value = estimate_GAM(
+      value = estimate_gam(
         sample = samples[i],
         formulae = get(
           paste(
@@ -84,9 +83,8 @@ for(i in 1:length(samples)) {
   }
   
   # Chi-squared test comparing GAM and GLM
-  compare_GAM_GLM(samples[i])
+  compare_gam_glm(samples[i])
 }
-toc()
 rm(i, j, k, model_name, plot)
 
 
@@ -99,7 +97,6 @@ OECD_dest_formula_gam = "mig_rate_new ~ OECD_dest + s(temp_anom, bs='cr') + s(te
 
 # vector of interaction names
 interactions = c("contiguity", "OECD_dest")
-tic()
 for(i in 2:length(samples)) {
   for(j in 1:length(interactions)) {
     # model name
@@ -113,7 +110,7 @@ for(i in 2:length(samples)) {
     # estimate GAM
     assign(
       x = model_name,
-      value = estimate_GAM(
+      value = estimate_gam(
         sample = samples[i],
         formulae = get(
           paste(interactions[j], "formula_gam", sep = "_")
@@ -133,5 +130,4 @@ for(i in 2:length(samples)) {
     }
   }
 }
-toc()
 rm(i, j, k, model_name, plot)

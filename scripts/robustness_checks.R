@@ -65,7 +65,7 @@ for(i in 2:length(samples)) {
     # estimate GAM
     assign(
       x = model_name,
-      value = estimate_GAM(
+      value = estimate_gam(
         sample = sample_name,
         formulae = baseline_formula_gam,
         directory = paste0("lowinc", thresholds[j])
@@ -98,7 +98,7 @@ for(i in 2:length(samples)) {
   # estimate GAM
   assign(
     x = model_name,
-    value = estimate_GAM(
+    value = estimate_gam(
       sample = samples[i],
       formulae = baseline_formula_gam,
       smoothing_method = "GCV.Cp",
@@ -143,7 +143,7 @@ for(i in 2:length(samples)) {
   # estimate GAM
   assign(
     x = model_name,
-    value = estimate_GAM(
+    value = estimate_gam(
       sample = samples[i],
       formulae = controls_formula_gam,
       directory = "controls"
@@ -177,7 +177,7 @@ for(i in 2:length(samples)) {
     # estimate GAM
     assign(
       x = model_name,
-      value = estimate_GAM(
+      value = estimate_gam(
         sample = samples[i],
         formulae = shares_formula_gam,
         directory = "shares"
@@ -211,9 +211,11 @@ df_total$agri_share_gdp_quantile = as.factor(df_total$agri_share_gdp_quantile)
 # estimate models separately for the different quartiles
 for(i in 1:(length(agri_share_quantiles) - 1)) {
   # create data frame
-  df = df_total %>% filter(agri_share_gdp_quantile == i)
   sample_name = paste0("agri", i)
-  assign(paste("df", sample_name, sep = "_"), df)
+  assign(
+    x = paste("df", sample_name, sep = "_"),
+    value = df_total %>% filter(agri_share_gdp_quantile == i)
+  )
   
   # model name
   model_name = paste("gam", sample_name, sep = "_")
@@ -221,7 +223,7 @@ for(i in 1:(length(agri_share_quantiles) - 1)) {
   # estimate GAM
   assign(
     x = model_name,
-    value = estimate_GAM(
+    value = estimate_gam(
       sample = sample_name,
       formulae = baseline_formula_gam,
       directory = "agri"
@@ -238,7 +240,7 @@ for(i in 1:(length(agri_share_quantiles) - 1)) {
     )
   }
 }
-rm(i, k, n, df, df_name, agri_share_quantiles)
+rm(i, k, sample_name, agri_share_quantiles)
 
 # GAM with interaction between climatic anomalies and factor variable indicating 
 # quartile of agricultural GDP
@@ -251,6 +253,7 @@ gam_total_agri = mgcv::gam(
   method = "REML"
 )
 saveRDS(gam_total_agri, "models/agri/gam_total_agri.rds")
+rm(agri_formula)
 
 
 
@@ -275,7 +278,7 @@ for(i in 2:length(samples)) {
     # estimate GAM
     assign(
       x = model_name,
-      value = estimate_GAM(
+      value = estimate_gam(
         sample = sample_name,
         formulae = baseline_formula_gam,
         directory = "no_2sd"

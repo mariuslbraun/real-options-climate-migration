@@ -29,7 +29,7 @@ get_df =  function(sample){
 }
 
 #### estimate and save GAM ####
-estimate_GAM = function(sample, formulae, model_type, by, directory, smoothing_method) {
+estimate_gam = function(sample, formulae, model_type, by, directory, smoothing_method) {
   # create data frame name
   df_name = paste(
     "df",
@@ -67,7 +67,12 @@ estimate_GAM = function(sample, formulae, model_type, by, directory, smoothing_m
       sample,
       sep = "_"
     )
-    if(missing(directory) | directory == "lowinc0.2" | directory == "lowinc0.3" | directory == "no_2sd") {
+    if(
+      missing(directory) |
+      str_detect(directory, "lowinc") |
+      str_detect(directory, "no_2sd") |
+      str_detect(directory, "agri")
+    ) {
       model_name = paste0(model_name, "")
     } else {
       model_name = paste(model_name, directory, sep = "_")
@@ -145,7 +150,12 @@ show_gam = function(sample, climate_var, model, by, directory) {
       sep = "_"
     )
     
-    if(missing(directory) | directory == "lowinc0.2" | directory == "lowinc0.3" | directory == "no_2sd") {
+    if(
+      missing(directory) |
+      str_detect(directory, "lowinc") |
+      str_detect(directory, "no_2sd") |
+      str_detect(directory, "agri")
+    ) {
       plot_name = paste0(plot_name, "")
     } else {
       plot_name = paste(plot_name, directory, sep = "_")
@@ -206,7 +216,7 @@ show_gam = function(sample, climate_var, model, by, directory) {
 }
 
 #### Chi-squared test comparing GAM and GLM ####
-compare_GAM_GLM = function(sample) {
+compare_gam_glm = function(sample) {
   compareML(
     get( # GAM
       paste(
