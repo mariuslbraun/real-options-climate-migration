@@ -5,7 +5,7 @@ In the paper, semiparametric regression models are used to investigate nonlinear
 
 Follow these steps to replicate the results of the paper:
 
-## 1. Setting up the R environment
+## 1. Setup
 
 First, open the R project file [Real_Options_Climate_Migration.Rproj](Real_Options_Climate_Migration.Rproj) in RStudio. It is important to work in the R project, as it is associated with the directory that the project is located in and will set the working directory accordingly.
 After opening the R project file, open [setup.R](setup.R). Running the file will set up an R environment using the `renv` package, which manages project-local R dependencies to ensure that existing data analysis workflows work as they did before;
@@ -38,16 +38,19 @@ In addition, t-tests comparing low- and middle-income sample means for the main 
 
 The general workflow is the same for all of the regression models:
 
-`estimate_gam(sample, formulae, model_type)` estimates a generalized additive model (GAM) with Gamma distribution and log link function using the `mgcv` package (Wood 2001). In addition, a number of diagnostic checks of the model fitting are produced. The estimation of the GAMs is quite computationally expensive, and depending on the model, this may take up to a few hours to execute (hence the `tic()` and `toc()` commands surrounding the model call). The arguments of the function are as follows:
+`estimate_gam(sample, formulae, model_type)` estimates a generalized additive model (GAM) with Gamma distribution and log link function using the `mgcv` package (Wood 2001) and saves it as a .RDS file. In addition, a number of diagnostic checks of the model fitting are produced. The estimation of the GAMs is quite computationally expensive, and depending on the model, this may take up to a few hours to execute. The arguments of the function are as follows:
   - `sample`: the sample for which the model is to be estimated. `"total"` for the total sample, and `"lowinc"` and `"midinc"` for low- and middle-income samples, respectively.
   - `formulae`: the regression formula for the model to be estimated. The baseline formula used in the GAMs for the main results is ```mig_rate_new ~ s(temp_anom, bs='cr') + s(precip_anom, bs='cr') + period + X...origin + destination```, with `s(temp_anom, bs='cr')` and `s(precip_anom, bs='cr')` as smooth nonparametric terms for temperature and precipitation anomalies, respectively.
   - `model_type`: `"gam"` for GAM and `"glm"` for GLM, passed to generate model file names.
+  - `by`: optional argument for interactions with factor variables. `"contiguity"` for contiguity dummy and `"OECD_dest"` for OECD destination dummy.
+  - `directory`: optional argument for the directory that the model file should be stored in. If no value is provided, files are stored in "main_results" directory.
 
 `show_gam(sample, climate_var, model)` produces plots of the estimated smooth nonparametric functions using the `itsadug` package. The arguments of the function are as follows:
 - `sample`: the sample for which smooths are to be plotted. `"total"` for the total sample, and `"lowinc"` and `"midinc"` for low- and middle-income samples, respectively.
 - `climate_var`: the climatic variable to be plotted. `"temp_anom"` for temperature anomalies and "`precip_anom` for precipitation anomalies.
 - `model`: the `gam` object from which smooths are to be plotted.
 - `by`: optional argument for interactions with factor variables. `"contiguity"` for contiguity dummy and `"OECD_dest"` for OECD destination dummy.
+- `directory`: optional argument for the directory that the plots should be stored in. If no value is provided, files are stored in "main_results" directory.
 
 The resulting plots should resemble the following figures:
 
@@ -55,6 +58,10 @@ The resulting plots should resemble the following figures:
 |----|----|----|
 |![gam_temp_anom_total](figures/main_results/gam_temp_anom_total.png)|![gam_temp_anom_lowinc](figures/main_results/gam_temp_anom_lowinc.png)|![gam_temp_anom_midinc](figures/main_results/gam_temp_anom_midinc.png)|
 |![gam_precip_anom_total](figures/main_results/gam_precip_anom_total.png)|![gam_precip_anom_lowinc](figures/main_results/gam_precip_anom_lowinc.png)|![gam_precip_anom_midinc](figures/main_results/gam_precip_anom_midinc.png)|
+
+`compare_gam_glm(gam, glm)` runs a Chi-squared test comparing the GAM to a GLM in which climate variables enter linearly (used only in the main results):
+- `gam`: a GAM object.
+- `glm`: the GLM that the GAM is to be tested against.
 
 Proceed analogously for all other models.
 
