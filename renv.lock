@@ -414,17 +414,6 @@
         "prettyunits"
       ]
     },
-    "purrr": {
-      "Package": "purrr",
-      "Version": "0.3.5",
-      "Source": "Repository",
-      "Repository": "RSPM",
-      "Hash": "54842a2443c76267152eface28d9e90a",
-      "Requirements": [
-        "magrittr",
-        "rlang"
-      ]
-    },
     "quantreg": {
       "Package": "quantreg",
       "Version": "5.94",
@@ -504,6 +493,26 @@
         "quantreg"
       ]
     },
+    "stringi": {
+      "Package": "stringi",
+      "Version": "1.7.8",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Hash": "a68b980681bcbc84c7a67003fa796bfb",
+      "Requirements": []
+    },
+    "stringr": {
+      "Package": "stringr",
+      "Version": "1.4.1",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Hash": "a66ad12140cd34d4f9dfcc19e84fc2a5",
+      "Requirements": [
+        "glue",
+        "magrittr",
+        "stringi"
+      ]
+    },
     "survival": {
       "Package": "survival",
       "Version": "3.4-0",
@@ -537,42 +546,6 @@
       "Repository": "RSPM",
       "Hash": "e1a2cb41e4be769a941c90c11469db90",
       "Requirements": []
-    },
-    "tidymv": {
-      "Package": "tidymv",
-      "Version": "3.3.2",
-      "Source": "Repository",
-      "Repository": "RSPM",
-      "Hash": "c093da26d333022823589ac9f4247175",
-      "Requirements": [
-        "dplyr",
-        "ggplot2",
-        "magrittr",
-        "mgcv",
-        "rlang",
-        "tibble",
-        "tidyr"
-      ]
-    },
-    "tidyr": {
-      "Package": "tidyr",
-      "Version": "1.2.1",
-      "Source": "Repository",
-      "Repository": "RSPM",
-      "Hash": "cdb403db0de33ccd1b6f53b83736efa8",
-      "Requirements": [
-        "cpp11",
-        "dplyr",
-        "ellipsis",
-        "glue",
-        "lifecycle",
-        "magrittr",
-        "purrr",
-        "rlang",
-        "tibble",
-        "tidyselect",
-        "vctrs"
-      ]
     },
     "tidyselect": {
       "Package": "tidyselect",

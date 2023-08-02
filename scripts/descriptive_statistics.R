@@ -15,6 +15,8 @@ library(ggplot2)
 library(tictoc)
 library(itsadug)
 library(moments)
+library(stringr)
+library(stringr)
 
 # clear workspace
 rm(list = ls())
