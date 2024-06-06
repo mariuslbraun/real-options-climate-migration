@@ -18,12 +18,9 @@ to load the CRAN snapshot from RStudio Package Manager. This will freeze to the 
 
 2. Install `renv` by calling `install.packages("renv")`.
 
-3. Call `renv::init()` to initialize a new project-local environment with a private R library.
-`bare = TRUE`: instead of installing dependencies automatically, we install packages manually.
+3. Call `renv::init(bare = TRUE)`to initialize the renv library.
 
-4. Install the required packages.
-
-5. Call `renv::snapshot()` to save the state of the project library.
+4. Call `renv::restore()` to restore the required dependencies as specified in the [renv.lock](renv.lock) file.
 
 The state of the library is saved in the [renv.lock](renv.lock) file.
 
